@@ -7,6 +7,15 @@ import type { OnboardingSlideData } from './types';
 // 3-dot pagination on every splash screen).
 export const TOTAL_ONBOARDING_DOTS = 3;
 
+// Design-px distance from the top of the header text block (i.e. right after
+// the 32px safe-area padding) down to the top of the pagination dots. This is
+// identical across all 3 Figma splash screens (dots always sit at frame-y=667,
+// header always starts at frame-y=76) — e.g. slide 1: 88 + 95 + 338 + 70 = 591;
+// slide 2: 124 + 109 + 320 + 38 = 591; slide 3: 124 + 101 + 307 + 59 = 591.
+// Because it's constant, the header+hero block can be a fixed-height sliding
+// viewport while the dots/CTA footer below stay sticky (not part of the slide).
+export const SLIDE_CONTENT_HEIGHT = 591;
+
 // Figma: "Splash Screen 9" — node 54:18407
 // https://www.figma.com/design/BRYiy1cPYtONG0fHRjj5Ez/Vibe-Code?node-id=54-18407
 const slide1: OnboardingSlideData = {
@@ -20,8 +29,6 @@ const slide1: OnboardingSlideData = {
   image: require('../../assets/onboarding/hero-splash.png'),
   heroBox: { left: 20, top: 0, width: 372, height: 320 },
   imageCrop: { left: '-12.49%', top: '-73.49%', width: '127.46%', height: '321.99%' },
-  gapAfterHero: 70,
-  activeDotIndex: 0,
 };
 
 // Figma: "Splash Screen 10" — node 54:18443
@@ -38,8 +45,6 @@ const slide2: OnboardingSlideData = {
   image: require('../../assets/onboarding/hero-splash-2.png'),
   heroBox: { left: 20, top: 0, width: 372, height: 320 },
   imageCrop: { left: '-5.38%', top: '-49.11%', width: '110.75%', height: '279.78%' },
-  gapAfterHero: 38,
-  activeDotIndex: 1,
 };
 
 // Figma: "Splash Screen 11" — node 54:18480
@@ -67,8 +72,6 @@ const slide3: OnboardingSlideData = {
     icon: require('../../assets/onboarding/badge-icon-3.png'),
     iconCrop: { left: '-135.58%', top: '-106.75%', width: '588.96%', height: '331.29%' },
   },
-  gapAfterHero: 59,
-  activeDotIndex: 2,
 };
 
 export const ONBOARDING_SLIDES: OnboardingSlideData[] = [slide1, slide2, slide3];

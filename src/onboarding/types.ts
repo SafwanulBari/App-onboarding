@@ -53,7 +53,4 @@ export type OnboardingSlideData = {
   imageCrop: ImageCrop;
   /** Optional rotated "SHIKHO AI" wordmark lockup floating over the hero (slide 3). */
   logoBadge?: LogoBadgeData;
-  /** Design-px gap between the hero section and the pagination dots. */
-  gapAfterHero: number;
-  activeDotIndex: number;
 };
