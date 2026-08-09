@@ -1,21 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated } from 'react-native';
+import { Animated, Easing, StyleSheet, useWindowDimensions } from 'react-native';
 import OnboardingSlideView from '../components/OnboardingSlideView';
 import { ONBOARDING_SLIDES, TOTAL_ONBOARDING_DOTS } from '../onboarding/slides';
 
 const AUTO_ADVANCE_DELAY_MS = 1500;
-const FADE_DURATION_MS = 200;
+const SLIDE_TRANSITION_MS = 450;
 
 type Props = {
   onFinish?: () => void;
 };
 
 // Auto-advancing onboarding intro: shows each slide in ONBOARDING_SLIDES for
-// 1.5s, then crossfades to the next one. Stops on the last slide currently
-// available — add more entries to ONBOARDING_SLIDES and it keeps advancing.
+// 1.5s, then smoothly slides (carousel-style, outgoing slide pushed left as
+// the next one enters from the right) into the next one. Stops on the last
+// slide currently available — add more entries to ONBOARDING_SLIDES and it
+// keeps advancing.
 export default function OnboardingCarouselScreen({ onFinish }: Props) {
+  const { width } = useWindowDimensions();
   const [index, setIndex] = useState(0);
-  const opacity = useRef(new Animated.Value(1)).current;
+  const [incomingIndex, setIncomingIndex] = useState<number | null>(null);
+  const shift = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (index >= ONBOARDING_SLIDES.length - 1) {
@@ -23,28 +27,49 @@ export default function OnboardingCarouselScreen({ onFinish }: Props) {
     }
 
     const timer = setTimeout(() => {
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: FADE_DURATION_MS,
+      const next = index + 1;
+      shift.setValue(0);
+      setIncomingIndex(next);
+      Animated.timing(shift, {
+        toValue: width,
+        duration: SLIDE_TRANSITION_MS,
+        easing: Easing.inOut(Easing.cubic),
         useNativeDriver: true,
       }).start(() => {
-        setIndex((i) => Math.min(i + 1, ONBOARDING_SLIDES.length - 1));
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: FADE_DURATION_MS,
-          useNativeDriver: true,
-        }).start();
+        setIndex(next);
+        setIncomingIndex(null);
+        shift.setValue(0);
       });
     }, AUTO_ADVANCE_DELAY_MS);
 
     return () => clearTimeout(timer);
-  }, [index, opacity]);
+  }, [index, width, shift]);
 
-  const slide = ONBOARDING_SLIDES[index];
+  const outgoingTranslateX = Animated.multiply(shift, -1);
+  const incomingTranslateX = Animated.subtract(width, shift);
 
   return (
-    <Animated.View style={{ flex: 1, opacity }}>
-      <OnboardingSlideView slide={slide} totalDots={TOTAL_ONBOARDING_DOTS} onContinue={onFinish} />
+    <Animated.View style={{ flex: 1, overflow: 'hidden' }}>
+      <Animated.View
+        style={[StyleSheet.absoluteFill, { transform: [{ translateX: outgoingTranslateX }] }]}
+      >
+        <OnboardingSlideView
+          slide={ONBOARDING_SLIDES[index]}
+          totalDots={TOTAL_ONBOARDING_DOTS}
+          onContinue={onFinish}
+        />
+      </Animated.View>
+      {incomingIndex !== null && (
+        <Animated.View
+          style={[StyleSheet.absoluteFill, { transform: [{ translateX: incomingTranslateX }] }]}
+        >
+          <OnboardingSlideView
+            slide={ONBOARDING_SLIDES[incomingIndex]}
+            totalDots={TOTAL_ONBOARDING_DOTS}
+            onContinue={onFinish}
+          />
+        </Animated.View>
+      )}
     </Animated.View>
   );
 }
