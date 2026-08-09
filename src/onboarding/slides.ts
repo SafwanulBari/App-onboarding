@@ -7,14 +7,16 @@ import type { OnboardingSlideData } from './types';
 // 3-dot pagination on every splash screen).
 export const TOTAL_ONBOARDING_DOTS = 3;
 
-// Design-px distance from the top of the header text block (i.e. right after
-// the 32px safe-area padding) down to the top of the pagination dots. This is
-// identical across all 3 Figma splash screens (dots always sit at frame-y=667,
-// header always starts at frame-y=76) — e.g. slide 1: 88 + 95 + 338 + 70 = 591;
-// slide 2: 124 + 109 + 320 + 38 = 591; slide 3: 124 + 101 + 307 + 59 = 591.
-// Because it's constant, the header+hero block can be a fixed-height sliding
-// viewport while the dots/CTA footer below stay sticky (not part of the slide).
-export const SLIDE_CONTENT_HEIGHT = 591;
+// Design-px distance from the top of the sliding viewport (i.e. the top of
+// the safe area, where OnboardingSlideContent's own 32px top padding starts)
+// down to the top of the pagination dots: 32 (header padding) + 591 (content
+// below it). The 591 is identical across all 3 Figma splash screens (dots
+// always sit at frame-y=667, header content always starts at frame-y=76) —
+// e.g. slide 1: 88 + 95 + 338 + 70 = 591; slide 2: 124 + 109 + 320 + 38 = 591;
+// slide 3: 124 + 101 + 307 + 59 = 591. Because it's constant, the header+hero
+// block can be a fixed-height sliding viewport while the dots/CTA footer
+// below stay sticky (not part of the slide).
+export const SLIDE_CONTENT_HEIGHT = 32 + 591;
 
 // Figma: "Splash Screen 9" — node 54:18407
 // https://www.figma.com/design/BRYiy1cPYtONG0fHRjj5Ez/Vibe-Code?node-id=54-18407
