@@ -16,11 +16,12 @@ import {
 } from '@expo-google-fonts/space-grotesk';
 import OnboardingCarouselScreen from './src/screens/OnboardingCarouselScreen';
 import LoginMobileNumberScreen from './src/screens/LoginMobileNumberScreen';
+import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
 import { APP_IMAGE_MODULES } from './src/onboarding/preload';
 
 SplashScreenModule.preventAutoHideAsync().catch(() => {});
 
-type Screen = 'onboarding' | 'login';
+type Screen = 'onboarding' | 'login' | 'otp';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -33,6 +34,7 @@ export default function App() {
   });
   const [assetsLoaded, setAssetsLoaded] = useState(false);
   const [screen, setScreen] = useState<Screen>('onboarding');
+  const [phoneNumber, setPhoneNumber] = useState('');
 
   useEffect(() => {
     Asset.loadAsync(APP_IMAGE_MODULES)
@@ -60,8 +62,19 @@ export default function App() {
         )}
         {screen === 'login' && (
           <LoginMobileNumberScreen
-            onContinue={(phone) => console.log('Continue with phone:', phone)}
+            onContinue={(phone) => {
+              setPhoneNumber(phone);
+              setScreen('otp');
+            }}
             onSkip={() => console.log('Skipped login')}
+          />
+        )}
+        {screen === 'otp' && (
+          <OtpVerificationScreen
+            phoneNumber={phoneNumber}
+            onBack={() => setScreen('login')}
+            onVerify={(otp) => console.log('Verify OTP:', otp)}
+            onResend={() => console.log('Resend OTP requested')}
           />
         )}
       </View>

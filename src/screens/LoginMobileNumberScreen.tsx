@@ -158,7 +158,6 @@ export default function LoginMobileNumberScreen({ onContinue, onSkip }: Props) {
               <View style={{ flex: 1, justifyContent: 'center' }}>
                 {phone.length === 0 && (
                   <Text
-                    pointerEvents="none"
                     style={{
                       position: 'absolute',
                       left: scale(12),
@@ -166,6 +165,7 @@ export default function LoginMobileNumberScreen({ onContinue, onSkip }: Props) {
                       fontSize: scale(14),
                       lineHeight: scale(14) * 1.6,
                       color: colors.gray700,
+                      pointerEvents: 'none',
                     }}
                   >
                     মোবাইল নম্বর দিন
