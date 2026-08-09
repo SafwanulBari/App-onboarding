@@ -25,6 +25,7 @@ type Props = {
 export default function RegistrationNameScreen({ onContinue }: Props) {
   const scale = useScale();
   const [name, setName] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
 
   const mascotCrop = resolveCrop(
     { left: '-16.37%', top: '-5.37%', width: '130.52%', height: '110.72%' },
@@ -115,26 +116,54 @@ export default function RegistrationNameScreen({ onContinue }: Props) {
         </View>
 
         <View style={{ flex: 1, justifyContent: 'center', paddingHorizontal: scale(20) }}>
-          <TextInput
-            value={name}
-            onChangeText={setName}
-            placeholder="তোমার নাম লেখো"
-            placeholderTextColor={colors.gray700}
-            autoFocus
-            style={{
-              fontFamily: fonts.regular,
-              fontSize: scale(24),
-              lineHeight: scale(24) * 1.6,
-              color: colors.gray900,
-              textAlign: 'center',
-            }}
-          />
+          <View style={{ height: scale(24) * 1.6 }}>
+            {/* Custom placeholder (regular gray700) instead of the native
+                `placeholder` prop, since typed text needs a different
+                weight/color (semibold, #0A0A0A) than the placeholder, and
+                RN's TextInput style applies to both. */}
+            {name.length === 0 && (
+              <Text
+                style={{
+                  width: '100%',
+                  textAlign: 'center',
+                  fontFamily: fonts.regular,
+                  fontSize: scale(24),
+                  lineHeight: scale(24) * 1.6,
+                  color: colors.gray700,
+                  pointerEvents: 'none',
+                }}
+              >
+                তোমার নাম লেখো
+              </Text>
+            )}
+            <TextInput
+              value={name}
+              onChangeText={setName}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              autoFocus
+              cursorColor={colors.primary500}
+              selectionColor={colors.primary500}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                fontFamily: fonts.semiBold,
+                fontSize: scale(24),
+                lineHeight: scale(24) * 1.6,
+                color: colors.secondaryNeutral950,
+                textAlign: 'center',
+              }}
+            />
+          </View>
           <View
             style={{
               marginTop: scale(12),
               height: scale(1.5),
               borderRadius: scale(1),
-              backgroundColor: colors.secondaryNeutral600,
+              backgroundColor: isFocused ? colors.primary500 : colors.secondaryNeutral600,
             }}
           />
         </View>
