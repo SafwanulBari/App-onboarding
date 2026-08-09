@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, StyleSheet, useWindowDimensions } from 'react-native';
+import { Animated, Easing, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import OnboardingFooter from '../components/OnboardingFooter';
@@ -25,30 +25,49 @@ export default function OnboardingCarouselScreen({ onFinish }: Props) {
   const scale = useScale();
   const [index, setIndex] = useState(0);
   const [incomingIndex, setIncomingIndex] = useState<number | null>(null);
-  const shift = useRef(new Animated.Value(0)).current;
+  // 0 -> 1 progress through the current transition, not a width-scaled value —
+  // interpolated below via .interpolate(), the standard/well-tested RN
+  // pattern for this, rather than mixing Animated.multiply/subtract with a
+  // window-width operand (which was never actually confirmed correct on a
+  // real device, only reasoned about).
+  const progress = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    // Don't schedule a transition until we have a real, measured window
+    // width — animating against width=0 (possible for a frame on some
+    // devices before layout settles) would make outgoing/incoming both
+    // render at the same position instead of off-screen.
+    if (!width) {
+      return;
+    }
+
     const timer = setTimeout(() => {
       const next = (index + 1) % ONBOARDING_SLIDES.length;
-      shift.setValue(0);
+      progress.setValue(0);
       setIncomingIndex(next);
-      Animated.timing(shift, {
-        toValue: width,
+      Animated.timing(progress, {
+        toValue: 1,
         duration: SLIDE_TRANSITION_MS,
         easing: Easing.inOut(Easing.cubic),
         useNativeDriver: true,
       }).start(() => {
         setIndex(next);
         setIncomingIndex(null);
-        shift.setValue(0);
+        progress.setValue(0);
       });
     }, AUTO_ADVANCE_DELAY_MS);
 
     return () => clearTimeout(timer);
-  }, [index, width, shift]);
+  }, [index, width, progress]);
 
-  const outgoingTranslateX = Animated.multiply(shift, -1);
-  const incomingTranslateX = Animated.subtract(width, shift);
+  const outgoingTranslateX = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -width],
+  });
+  const incomingTranslateX = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [width, 0],
+  });
   const activeDotIndex = incomingIndex ?? index;
 
   return (
@@ -59,20 +78,20 @@ export default function OnboardingCarouselScreen({ onFinish }: Props) {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <Animated.View style={{ height: scale(SLIDE_CONTENT_HEIGHT), overflow: 'hidden' }}>
+        <View style={{ width: '100%', height: scale(SLIDE_CONTENT_HEIGHT), overflow: 'hidden' }}>
           <Animated.View
-            style={[StyleSheet.absoluteFill, { transform: [{ translateX: outgoingTranslateX }] }]}
+            style={[StyleSheet.absoluteFill, { width, transform: [{ translateX: outgoingTranslateX }] }]}
           >
             <OnboardingSlideContent slide={ONBOARDING_SLIDES[index]} />
           </Animated.View>
           {incomingIndex !== null && (
             <Animated.View
-              style={[StyleSheet.absoluteFill, { transform: [{ translateX: incomingTranslateX }] }]}
+              style={[StyleSheet.absoluteFill, { width, transform: [{ translateX: incomingTranslateX }] }]}
             >
               <OnboardingSlideContent slide={ONBOARDING_SLIDES[incomingIndex]} />
             </Animated.View>
           )}
-        </Animated.View>
+        </View>
 
         <PaginationDots count={TOTAL_ONBOARDING_DOTS} activeIndex={activeDotIndex} />
 
