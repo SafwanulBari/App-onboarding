@@ -73,6 +73,7 @@ export default function OnboardingSlideContent({ slide }: Props) {
               fit, so the intended focal point (faces, etc.) stays in frame. */}
           <Image
             source={slide.image}
+            fadeDuration={0}
             style={{
               position: 'absolute',
               left: slide.imageCrop.left,

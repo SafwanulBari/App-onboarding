@@ -1,5 +1,6 @@
+import { Asset } from 'expo-asset';
 import { StatusBar } from 'expo-status-bar';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import * as SplashScreenModule from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -15,6 +16,7 @@ import {
   SpaceGrotesk_700Bold,
 } from '@expo-google-fonts/space-grotesk';
 import OnboardingCarouselScreen from './src/screens/OnboardingCarouselScreen';
+import { ONBOARDING_IMAGE_MODULES } from './src/onboarding/preload';
 
 SplashScreenModule.preventAutoHideAsync().catch(() => {});
 
@@ -27,14 +29,23 @@ export default function App() {
     SpaceGrotesk_300Light,
     SpaceGrotesk_700Bold,
   });
+  const [assetsLoaded, setAssetsLoaded] = useState(false);
+
+  useEffect(() => {
+    Asset.loadAsync(ONBOARDING_IMAGE_MODULES)
+      .catch((e) => console.warn('Failed to preload onboarding images', e))
+      .finally(() => setAssetsLoaded(true));
+  }, []);
+
+  const ready = fontsLoaded && assetsLoaded;
 
   const onLayout = useCallback(async () => {
-    if (fontsLoaded) {
+    if (ready) {
       await SplashScreenModule.hideAsync();
     }
-  }, [fontsLoaded]);
+  }, [ready]);
 
-  if (!fontsLoaded) {
+  if (!ready) {
     return null;
   }
 

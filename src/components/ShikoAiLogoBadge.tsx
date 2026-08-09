@@ -45,6 +45,7 @@ export default function ShikoAiLogoBadge({ badge }: Props) {
         >
           <Image
             source={badge.icon}
+            fadeDuration={0}
             style={{
               position: 'absolute',
               left: badge.iconCrop.left,
