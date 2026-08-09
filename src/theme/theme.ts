@@ -28,4 +28,7 @@ export const fonts = {
   medium: 'BalooDa2_500Medium',
   semiBold: 'BalooDa2_600SemiBold',
   bold: 'BalooDa2_700Bold',
+  // Space Grotesk is used only for the "SHIKHO AI" wordmark lockup (slide 3).
+  spaceGroteskLight: 'SpaceGrotesk_300Light',
+  spaceGroteskBold: 'SpaceGrotesk_700Bold',
 };

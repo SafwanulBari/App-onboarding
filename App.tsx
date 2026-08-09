@@ -10,6 +10,10 @@ import {
   BalooDa2_600SemiBold,
   BalooDa2_700Bold,
 } from '@expo-google-fonts/baloo-da-2';
+import {
+  SpaceGrotesk_300Light,
+  SpaceGrotesk_700Bold,
+} from '@expo-google-fonts/space-grotesk';
 import OnboardingCarouselScreen from './src/screens/OnboardingCarouselScreen';
 
 SplashScreenModule.preventAutoHideAsync().catch(() => {});
@@ -20,6 +24,8 @@ export default function App() {
     BalooDa2_500Medium,
     BalooDa2_600SemiBold,
     BalooDa2_700Bold,
+    SpaceGrotesk_300Light,
+    SpaceGrotesk_700Bold,
   });
 
   const onLayout = useCallback(async () => {

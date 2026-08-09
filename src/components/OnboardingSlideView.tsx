@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
 import PaginationDots from './PaginationDots';
+import ShikoAiLogoBadge from './ShikoAiLogoBadge';
 import type { OnboardingSlideData } from '../onboarding/types';
 import { colors, fonts, useScale } from '../theme/theme';
 
@@ -69,10 +70,10 @@ export default function OnboardingSlideView({ slide, totalDots, onContinue }: Pr
           <View
             style={{
               position: 'absolute',
-              top: 0,
-              left: scale(20),
-              width: scale(372),
-              height: scale(320),
+              top: scale(slide.heroBox.top),
+              left: scale(slide.heroBox.left),
+              width: scale(slide.heroBox.width),
+              height: scale(slide.heroBox.height),
               overflow: 'hidden',
             }}
           >
@@ -90,6 +91,7 @@ export default function OnboardingSlideView({ slide, totalDots, onContinue }: Pr
               }}
             />
           </View>
+          {slide.logoBadge && <ShikoAiLogoBadge badge={slide.logoBadge} />}
         </View>
 
         <PaginationDots count={totalDots} activeIndex={slide.activeDotIndex} />
