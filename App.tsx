@@ -17,11 +17,12 @@ import {
 import OnboardingCarouselScreen from './src/screens/OnboardingCarouselScreen';
 import LoginMobileNumberScreen from './src/screens/LoginMobileNumberScreen';
 import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
+import RegistrationNameScreen from './src/screens/RegistrationNameScreen';
 import { APP_IMAGE_MODULES } from './src/onboarding/preload';
 
 SplashScreenModule.preventAutoHideAsync().catch(() => {});
 
-type Screen = 'onboarding' | 'login' | 'otp';
+type Screen = 'onboarding' | 'login' | 'otp' | 'registrationName';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -73,9 +74,12 @@ export default function App() {
           <OtpVerificationScreen
             phoneNumber={phoneNumber}
             onBack={() => setScreen('login')}
-            onVerify={(otp) => console.log('Verify OTP:', otp)}
+            onVerify={() => setScreen('registrationName')}
             onResend={() => console.log('Resend OTP requested')}
           />
+        )}
+        {screen === 'registrationName' && (
+          <RegistrationNameScreen onContinue={(name) => console.log('Name entered:', name)} />
         )}
       </View>
     </SafeAreaProvider>
