@@ -23,8 +23,10 @@ export const colors = {
   gray700: '#626262',
   gray800: '#434343',
   gray900: '#222222',
+  secondaryNeutral950: '#0A0A0A',
   secondary500: '#E2008D',
   primary500: '#5468FF',
+  accent100: '#E4EEF5',
   dotInactive: 'rgba(255,255,255,0.2)',
 };
 

@@ -8,23 +8,26 @@ import { CHEVRON_DOWN_SVG_XML } from '../assets/svg/chevronDown';
 import { LOGIN_ILLUSTRATION_SVG_XML } from '../assets/svg/loginIllustration';
 import { resolveCrop } from '../onboarding/resolveCrop';
 import { colors, fonts, useScale } from '../theme/theme';
+import { toBengaliDigits } from '../utils/bengaliDigits';
 
 const flagImage = require('../../assets/login/flag-bd.png');
 
-// A real BD mobile number is 10 digits after the +88 country code
-// (e.g. 1XXXXXXXXX) — used only to gate the CTA, not full validation.
-const MIN_DIGITS = 10;
+// A local BD mobile number (with leading 0, no country code) is 11 digits,
+// e.g. 01712345678 — the CTA only enables at the full length.
+const REQUIRED_DIGITS = 11;
 
 type Props = {
   onContinue?: (phoneNumber: string) => void;
   onSkip?: () => void;
 };
 
-// Figma: "Login - Mobile Number" — node 54:18912
+// Figma: "Login - Mobile Number" (+ its "Typing" and "Filled" states) — nodes
+// 54:18912, 54:19068, 54:18990
 // https://www.figma.com/design/BRYiy1cPYtONG0fHRjj5Ez/Vibe-Code?node-id=54-18912
 export default function LoginMobileNumberScreen({ onContinue, onSkip }: Props) {
   const scale = useScale();
   const [phone, setPhone] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
 
   const flagCrop = resolveCrop(
     { left: '-6.17%', top: '0%', width: '123.46%', height: '100%' },
@@ -32,8 +35,11 @@ export default function LoginMobileNumberScreen({ onContinue, onSkip }: Props) {
     scale(14.815)
   );
 
-  const digitCount = phone.replace(/\D/g, '').length;
-  const isEnabled = digitCount >= MIN_DIGITS;
+  const isEnabled = phone.length >= REQUIRED_DIGITS;
+
+  const handleChangeText = (text: string) => {
+    setPhone(text.replace(/\D/g, '').slice(0, REQUIRED_DIGITS));
+  };
 
   const handleContinue = () => {
     if (isEnabled) {
@@ -76,8 +82,8 @@ export default function LoginMobileNumberScreen({ onContinue, onSkip }: Props) {
                 width: scale(338),
               }}
             >
-              তোমার যে নম্বরে One Time Password (OTP) পাঠানো হবে অথবা যে নম্বর দিয়ে আপনি ইতোমধ্যে
-              রেজিস্ট্রেশন করেছো
+              আপনার যে নম্বরে One Time Password (OTP) পাঠানো হবে অথবা যে নম্বর দিয়ে আপনি ইতোমধ্যে
+              রেজিস্ট্রেশন করেছেন
             </Text>
           </View>
 
@@ -97,7 +103,9 @@ export default function LoginMobileNumberScreen({ onContinue, onSkip }: Props) {
                 marginTop: scale(6),
                 height: scale(54),
                 borderRadius: scale(12),
-                backgroundColor: colors.gray200,
+                backgroundColor: isFocused ? colors.accent100 : colors.gray200,
+                borderWidth: isFocused ? 1 : 0,
+                borderColor: colors.primary500,
                 flexDirection: 'row',
                 alignItems: 'center',
                 overflow: 'hidden',
@@ -146,20 +154,40 @@ export default function LoginMobileNumberScreen({ onContinue, onSkip }: Props) {
                 </Text>
                 <SvgXml xml={CHEVRON_DOWN_SVG_XML} width={scale(8)} height={scale(5.15)} />
               </View>
-              <TextInput
-                value={phone}
-                onChangeText={setPhone}
-                placeholder="মোবাইল নম্বর দিন"
-                placeholderTextColor={colors.gray700}
-                keyboardType="phone-pad"
-                style={{
-                  flex: 1,
-                  paddingHorizontal: scale(12),
-                  fontFamily: fonts.regular,
-                  fontSize: scale(14),
-                  color: colors.gray900,
-                }}
-              />
+
+              <View style={{ flex: 1, justifyContent: 'center' }}>
+                {phone.length === 0 && (
+                  <Text
+                    pointerEvents="none"
+                    style={{
+                      position: 'absolute',
+                      left: scale(12),
+                      fontFamily: fonts.regular,
+                      fontSize: scale(14),
+                      lineHeight: scale(14) * 1.6,
+                      color: colors.gray700,
+                    }}
+                  >
+                    মোবাইল নম্বর দিন
+                  </Text>
+                )}
+                <TextInput
+                  value={toBengaliDigits(phone)}
+                  onChangeText={handleChangeText}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  keyboardType="phone-pad"
+                  maxLength={REQUIRED_DIGITS}
+                  cursorColor={colors.primary500}
+                  selectionColor={colors.primary500}
+                  style={{
+                    paddingHorizontal: scale(12),
+                    fontFamily: fonts.semiBold,
+                    fontSize: scale(14),
+                    color: colors.secondaryNeutral950,
+                  }}
+                />
+              </View>
             </View>
 
             <Pressable
