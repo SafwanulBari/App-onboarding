@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import OnboardingFooter from '../components/OnboardingFooter';
 import OnboardingSlideContent from '../components/OnboardingSlideContent';
@@ -77,6 +78,7 @@ export default function OnboardingCarouselScreen({ onFinish }: Props) {
       end={{ x: 0.5, y: 1 }}
       style={{ flex: 1 }}
     >
+      <StatusBar style="light" />
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
         <View style={{ width: '100%', height: scale(SLIDE_CONTENT_HEIGHT), overflow: 'hidden' }}>
           <Animated.View

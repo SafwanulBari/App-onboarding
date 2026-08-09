@@ -1,0 +1,7 @@
+// Source: Figma node 54:18955 "Vector" (country-code dropdown chevron, Login - Mobile Number).
+export const CHEVRON_DOWN_WIDTH = 8;
+export const CHEVRON_DOWN_HEIGHT = 5.15441;
+
+export const CHEVRON_DOWN_SVG_XML = `<svg preserveAspectRatio="none" overflow="visible" width="8" height="5.15441" viewBox="0 0 8 5.15441" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path id="Vector" d="M0.142787 0.967313L3.55548 4.94985C3.61049 5.01401 3.67873 5.06551 3.75551 5.10082C3.8323 5.13613 3.91581 5.15441 4.00032 5.15441C4.08483 5.15441 4.16835 5.13613 4.24513 5.10082C4.32191 5.06551 4.39015 5.01401 4.44516 4.94985L7.85786 0.967313C8.18355 0.587175 7.91352 0 7.41302 0H0.586647C0.0861442 0 -0.183883 0.587175 0.142787 0.967313Z" fill="#767676"/>
+</svg>`;

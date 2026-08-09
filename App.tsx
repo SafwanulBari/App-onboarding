@@ -1,5 +1,4 @@
 import { Asset } from 'expo-asset';
-import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import * as SplashScreenModule from 'expo-splash-screen';
@@ -16,9 +15,12 @@ import {
   SpaceGrotesk_700Bold,
 } from '@expo-google-fonts/space-grotesk';
 import OnboardingCarouselScreen from './src/screens/OnboardingCarouselScreen';
-import { ONBOARDING_IMAGE_MODULES } from './src/onboarding/preload';
+import LoginMobileNumberScreen from './src/screens/LoginMobileNumberScreen';
+import { APP_IMAGE_MODULES } from './src/onboarding/preload';
 
 SplashScreenModule.preventAutoHideAsync().catch(() => {});
+
+type Screen = 'onboarding' | 'login';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -30,10 +32,11 @@ export default function App() {
     SpaceGrotesk_700Bold,
   });
   const [assetsLoaded, setAssetsLoaded] = useState(false);
+  const [screen, setScreen] = useState<Screen>('onboarding');
 
   useEffect(() => {
-    Asset.loadAsync(ONBOARDING_IMAGE_MODULES)
-      .catch((e) => console.warn('Failed to preload onboarding images', e))
+    Asset.loadAsync(APP_IMAGE_MODULES)
+      .catch((e) => console.warn('Failed to preload app images', e))
       .finally(() => setAssetsLoaded(true));
   }, []);
 
@@ -52,8 +55,15 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <View style={{ flex: 1 }} onLayout={onLayout}>
-        <StatusBar style="light" />
-        <OnboardingCarouselScreen onFinish={() => console.log('Continue pressed')} />
+        {screen === 'onboarding' && (
+          <OnboardingCarouselScreen onFinish={() => setScreen('login')} />
+        )}
+        {screen === 'login' && (
+          <LoginMobileNumberScreen
+            onContinue={(phone) => console.log('Continue with phone:', phone)}
+            onSkip={() => console.log('Skipped login')}
+          />
+        )}
       </View>
     </SafeAreaProvider>
   );

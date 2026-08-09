@@ -17,8 +17,14 @@ export const colors = {
   gradientEnd: '#030003',
   white: '#FFFFFF',
   gray100: '#F5F5F5',
+  gray200: '#EFEFEF',
+  gray400: '#BEBEBE',
+  gray600: '#767676',
+  gray700: '#626262',
+  gray800: '#434343',
   gray900: '#222222',
   secondary500: '#E2008D',
+  primary500: '#5468FF',
   dotInactive: 'rgba(255,255,255,0.2)',
 };
 
