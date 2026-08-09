@@ -1,0 +1,31 @@
+import { useWindowDimensions } from 'react-native';
+
+// Figma reference frame: "Splash Screen 9" (node 54:18407) is 412 design-px wide.
+// useScale() maps a design-px value to the current device's dp so spacing/sizing
+// stays proportionally faithful to the Figma mock across screen widths. It reads
+// width from useWindowDimensions (not Dimensions.get, which is captured once and
+// goes stale on resize/rotation/web) so it stays correct as the window changes.
+const FIGMA_FRAME_WIDTH = 412;
+
+export function useScale() {
+  const { width } = useWindowDimensions();
+  return (size: number) => Math.round((size * width) / FIGMA_FRAME_WIDTH);
+}
+
+export const colors = {
+  gradientStart: '#4a28be',
+  gradientEnd: '#030003',
+  white: '#FFFFFF',
+  gray100: '#F5F5F5',
+  gray900: '#222222',
+  secondary500: '#E2008D',
+  dotInactive: 'rgba(255,255,255,0.2)',
+};
+
+// Baloo Da 2 supports Bengali glyphs and is the family used throughout the design.
+export const fonts = {
+  regular: 'BalooDa2_400Regular',
+  medium: 'BalooDa2_500Medium',
+  semiBold: 'BalooDa2_600SemiBold',
+  bold: 'BalooDa2_700Bold',
+};

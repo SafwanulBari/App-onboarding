@@ -1,20 +1,43 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { View } from 'react-native';
+import * as SplashScreenModule from 'expo-splash-screen';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {
+  useFonts,
+  BalooDa2_400Regular,
+  BalooDa2_500Medium,
+  BalooDa2_600SemiBold,
+  BalooDa2_700Bold,
+} from '@expo-google-fonts/baloo-da-2';
+import SplashScreen from './src/screens/SplashScreen';
+
+SplashScreenModule.preventAutoHideAsync().catch(() => {});
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    BalooDa2_400Regular,
+    BalooDa2_500Medium,
+    BalooDa2_600SemiBold,
+    BalooDa2_700Bold,
+  });
+
+  const onLayout = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreenModule.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaProvider>
+      <View style={{ flex: 1 }} onLayout={onLayout}>
+        <StatusBar style="light" />
+        <SplashScreen onContinue={() => console.log('Continue pressed')} />
+      </View>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
