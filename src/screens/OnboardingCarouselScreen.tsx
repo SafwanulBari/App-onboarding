@@ -12,9 +12,9 @@ type Props = {
 
 // Auto-advancing onboarding intro: shows each slide in ONBOARDING_SLIDES for
 // 1.5s, then smoothly slides (carousel-style, outgoing slide pushed left as
-// the next one enters from the right) into the next one. Stops on the last
-// slide currently available — add more entries to ONBOARDING_SLIDES and it
-// keeps advancing.
+// the next one enters from the right) into the next one. Loops continuously
+// — after the last slide it wraps back around to the first. The CTA button
+// (onFinish) is the way out, independent of this loop.
 export default function OnboardingCarouselScreen({ onFinish }: Props) {
   const { width } = useWindowDimensions();
   const [index, setIndex] = useState(0);
@@ -22,12 +22,8 @@ export default function OnboardingCarouselScreen({ onFinish }: Props) {
   const shift = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    if (index >= ONBOARDING_SLIDES.length - 1) {
-      return;
-    }
-
     const timer = setTimeout(() => {
-      const next = index + 1;
+      const next = (index + 1) % ONBOARDING_SLIDES.length;
       shift.setValue(0);
       setIncomingIndex(next);
       Animated.timing(shift, {
