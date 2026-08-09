@@ -28,7 +28,7 @@ const slide1: OnboardingSlideData = {
   gapBeforeHero: 95,
   heroHeight: 338,
   swirl: { xml: SWIRL_1_XML, top: 141, height: 197 },
-  image: require('../../assets/onboarding/hero-splash.webp'),
+  image: require('../../assets/onboarding/hero-splash.png'),
   heroBox: { left: 20, top: 0, width: 372, height: 320 },
   imageCrop: { left: '-12.49%', top: '-73.49%', width: '127.46%', height: '321.99%' },
 };
@@ -44,7 +44,7 @@ const slide2: OnboardingSlideData = {
   gapBeforeHero: 109,
   heroHeight: 320,
   swirl: { xml: SWIRL_2_XML, top: 107, height: 211 },
-  image: require('../../assets/onboarding/hero-splash-2.webp'),
+  image: require('../../assets/onboarding/hero-splash-2.png'),
   heroBox: { left: 20, top: 0, width: 372, height: 320 },
   imageCrop: { left: '-5.38%', top: '-49.11%', width: '110.75%', height: '279.78%' },
 };
@@ -61,7 +61,7 @@ const slide3: OnboardingSlideData = {
   gapBeforeHero: 101,
   heroHeight: 307,
   swirl: { xml: SWIRL_3_XML, top: 110, height: 197 },
-  image: require('../../assets/onboarding/hero-splash-3.webp'),
+  image: require('../../assets/onboarding/hero-splash-3.png'),
   heroBox: { left: 61, top: 4, width: 320, height: 292 },
   imageCrop: { left: '0%', top: '0%', width: '100%', height: '109.59%' },
   logoBadge: {
@@ -71,7 +71,7 @@ const slide3: OnboardingSlideData = {
     height: 49,
     rotationDeg: 6.07,
     iconSize: 34,
-    icon: require('../../assets/onboarding/badge-icon-3.webp'),
+    icon: require('../../assets/onboarding/badge-icon-3.png'),
     iconCrop: { left: '-135.58%', top: '-106.75%', width: '588.96%', height: '331.29%' },
   },
 };

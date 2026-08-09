@@ -2,6 +2,7 @@ import React from 'react';
 import { Image, Text, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import ShikoAiLogoBadge from './ShikoAiLogoBadge';
+import { resolveCrop } from '../onboarding/resolveCrop';
 import type { OnboardingSlideData } from '../onboarding/types';
 import { colors, fonts, useScale } from '../theme/theme';
 
@@ -16,6 +17,9 @@ type Props = {
 // live here and don't move.
 export default function OnboardingSlideContent({ slide }: Props) {
   const scale = useScale();
+  const heroBoxWidth = scale(slide.heroBox.width);
+  const heroBoxHeight = scale(slide.heroBox.height);
+  const imageCrop = resolveCrop(slide.imageCrop, heroBoxWidth, heroBoxHeight);
 
   return (
     <View style={{ flex: 1 }}>
@@ -63,23 +67,25 @@ export default function OnboardingSlideContent({ slide }: Props) {
             position: 'absolute',
             top: scale(slide.heroBox.top),
             left: scale(slide.heroBox.left),
-            width: scale(slide.heroBox.width),
-            height: scale(slide.heroBox.height),
+            width: heroBoxWidth,
+            height: heroBoxHeight,
             overflow: 'hidden',
           }}
         >
           {/* Reproduces Figma's image-fill crop exactly: the source photo is
               scaled/offset per slide.imageCrop rather than a centered "cover"
-              fit, so the intended focal point (faces, etc.) stays in frame. */}
+              fit, so the intended focal point (faces, etc.) stays in frame.
+              Resolved to plain pixel numbers (not percentage strings) so
+              positioning is unambiguous on native, not just on web. */}
           <Image
             source={slide.image}
             fadeDuration={0}
             style={{
               position: 'absolute',
-              left: slide.imageCrop.left,
-              top: slide.imageCrop.top,
-              width: slide.imageCrop.width,
-              height: slide.imageCrop.height,
+              left: imageCrop.left,
+              top: imageCrop.top,
+              width: imageCrop.width,
+              height: imageCrop.height,
             }}
           />
         </View>
