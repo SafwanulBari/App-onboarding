@@ -8,7 +8,7 @@ import { CHEVRON_DOWN_SVG_XML } from '../assets/svg/chevronDown';
 import { LOGIN_ILLUSTRATION_SVG_XML } from '../assets/svg/loginIllustration';
 import { resolveCrop } from '../onboarding/resolveCrop';
 import { colors, fonts, useScale } from '../theme/theme';
-import { toBengaliDigits } from '../utils/bengaliDigits';
+import { toBengaliDigits, toWesternDigits } from '../utils/bengaliDigits';
 
 const flagImage = require('../../assets/login/flag-bd.png');
 
@@ -38,7 +38,7 @@ export default function LoginMobileNumberScreen({ onContinue, onSkip }: Props) {
   const isEnabled = phone.length >= REQUIRED_DIGITS;
 
   const handleChangeText = (text: string) => {
-    setPhone(text.replace(/\D/g, '').slice(0, REQUIRED_DIGITS));
+    setPhone(toWesternDigits(text).replace(/\D/g, '').slice(0, REQUIRED_DIGITS));
   };
 
   const handleContinue = () => {
