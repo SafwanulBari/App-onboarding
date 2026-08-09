@@ -10,7 +10,7 @@ import {
   BalooDa2_600SemiBold,
   BalooDa2_700Bold,
 } from '@expo-google-fonts/baloo-da-2';
-import SplashScreen from './src/screens/SplashScreen';
+import OnboardingCarouselScreen from './src/screens/OnboardingCarouselScreen';
 
 SplashScreenModule.preventAutoHideAsync().catch(() => {});
 
@@ -36,7 +36,7 @@ export default function App() {
     <SafeAreaProvider>
       <View style={{ flex: 1 }} onLayout={onLayout}>
         <StatusBar style="light" />
-        <SplashScreen onContinue={() => console.log('Continue pressed')} />
+        <OnboardingCarouselScreen onFinish={() => console.log('Continue pressed')} />
       </View>
     </SafeAreaProvider>
   );

@@ -3,19 +3,20 @@ import { Image, Pressable, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
-import PaginationDots from '../components/PaginationDots';
-import { SWIRL_SVG_XML } from '../assets/svg/swirl';
+import PaginationDots from './PaginationDots';
+import type { OnboardingSlideData } from '../onboarding/types';
 import { colors, fonts, useScale } from '../theme/theme';
 
-const heroImage = require('../../assets/onboarding/hero-splash.png');
-
 type Props = {
+  slide: OnboardingSlideData;
+  totalDots: number;
   onContinue?: () => void;
 };
 
-// Figma: "Splash Screen 9" — node 54:18407
-// https://www.figma.com/design/BRYiy1cPYtONG0fHRjj5Ez/Vibe-Code?node-id=54-18407
-export default function SplashScreen({ onContinue }: Props) {
+// Shared chrome for every onboarding splash screen (Figma "Splash Screen 9/10/…"):
+// gradient bg, headline+subhead, hero photo w/ swirl, pagination dots, CTA + microcopy.
+// Per-slide content comes from `slide` (see src/onboarding/slides.ts).
+export default function OnboardingSlideView({ slide, totalDots, onContinue }: Props) {
   const scale = useScale();
 
   return (
@@ -36,7 +37,7 @@ export default function SplashScreen({ onContinue }: Props) {
               textAlign: 'center',
             }}
           >
-            {"Shikho'র দুনিয়ায় স্বাগত!"}
+            {slide.title}
           </Text>
           <Text
             style={{
@@ -46,24 +47,24 @@ export default function SplashScreen({ onContinue }: Props) {
               color: colors.gray100,
               textAlign: 'center',
               marginTop: scale(8),
+              width: slide.subtitleWidth ? scale(slide.subtitleWidth) : undefined,
             }}
           >
-            ইন্টারঅ্যাকটিভ ভিডিও লেসন, লাইভ ক্লাস এবং ব্যক্তিগতকৃত শেখার অভিজ্ঞতার মাধ্যমে প্রতিটি
-            বিষয় আত্মবিশ্বাসের সঙ্গে বুঝে শেখো।
+            {slide.subtitle}
           </Text>
         </View>
 
-        <View style={{ marginTop: scale(95), height: scale(338), width: '100%' }}>
+        <View style={{ marginTop: scale(slide.gapBeforeHero), height: scale(slide.heroHeight), width: '100%' }}>
           <View
             style={{
               position: 'absolute',
-              top: scale(141),
+              top: scale(slide.swirl.top),
               left: 0,
               width: '100%',
-              height: scale(197),
+              height: scale(slide.swirl.height),
             }}
           >
-            <SvgXml xml={SWIRL_SVG_XML} width="100%" height={scale(197)} />
+            <SvgXml xml={slide.swirl.xml} width="100%" height={scale(slide.swirl.height)} />
           </View>
           <View
             style={{
@@ -75,25 +76,23 @@ export default function SplashScreen({ onContinue }: Props) {
               overflow: 'hidden',
             }}
           >
-            {/* Reproduces Figma's image-fill crop exactly (node 54:18430): the
-                source photo is scaled to 127.46% / 321.99% of the box and offset
-                by -12.49% / -73.49%, rather than a centered "cover" fit — this
-                keeps the students' faces in frame instead of centering the tall
-                source photo. */}
+            {/* Reproduces Figma's image-fill crop exactly: the source photo is
+                scaled/offset per slide.imageCrop rather than a centered "cover"
+                fit, so the intended focal point (faces, etc.) stays in frame. */}
             <Image
-              source={heroImage}
+              source={slide.image}
               style={{
                 position: 'absolute',
-                left: '-12.49%',
-                top: '-73.49%',
-                width: '127.46%',
-                height: '321.99%',
+                left: slide.imageCrop.left,
+                top: slide.imageCrop.top,
+                width: slide.imageCrop.width,
+                height: slide.imageCrop.height,
               }}
             />
           </View>
         </View>
 
-        <PaginationDots count={3} activeIndex={0} />
+        <PaginationDots count={totalDots} activeIndex={slide.activeDotIndex} />
 
         <View
           style={{
