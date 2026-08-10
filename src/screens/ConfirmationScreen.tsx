@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Image, Platform, Pressable, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -67,6 +67,15 @@ const FEATURES: Feature[] = [
   },
 ];
 
+// Approximates the design's Gaussian-blurred glow ellipse (54:1557) as a
+// soft radial falloff — see the comment where these are rendered.
+const GLOW_RINGS = [
+  { size: 100, opacity: 0.14 },
+  { size: 174, opacity: 0.1 },
+  { size: 280, opacity: 0.06 },
+  { size: 400, opacity: 0.03 },
+];
+
 type Props = {
   onGoHome?: () => void;
 };
@@ -97,40 +106,66 @@ export default function ConfirmationScreen({ onGoHome }: Props) {
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
         <View style={{ flex: 1, overflow: 'hidden' }}>
           {/* Decorative background layer — a large, very faint radial
-              starburst behind the mascot (54:1868) and a soft glow ellipse
-              (54:1557) behind it, both purely decorative and layered
-              behind the real content below. */}
+              starburst behind the mascot (54:1868), purely decorative and
+              layered behind the real content below. (The soft glow ellipse
+              behind the mascot, 54:1557, is a heavily Gaussian-blurred
+              circle in the design — react-native-svg's filter-primitive
+              support is inconsistent on native, so instead of inlining
+              that filter or approximating it with one flat-opacity circle
+              (which read as a hard-edged "background disc", not a soft
+              glow — see git history), it's approximated below with
+              several concentric low-opacity circles of increasing size,
+              which fades out with no visible edge on every platform. */}
           <SvgXml
             xml={CONFIRMATION_BURST_SVG_XML}
             width={scale(975.95)}
             height={scale(973.828)}
             style={{ position: 'absolute', left: scale(-282), top: scale(-586) }}
           />
-          <View
-            style={{
-              position: 'absolute',
-              left: scale(120),
-              top: scale(-25),
-              width: scale(174),
-              height: scale(174),
-              borderRadius: scale(87),
-              backgroundColor: '#DFDFDF',
-              opacity: 0.55,
-            }}
-          />
+          {GLOW_RINGS.map((ring) => (
+            <View
+              key={ring.size}
+              style={{
+                position: 'absolute',
+                left: '50%',
+                top: scale(62),
+                width: scale(ring.size),
+                height: scale(ring.size),
+                marginLeft: -scale(ring.size) / 2,
+                marginTop: -scale(ring.size) / 2,
+                borderRadius: scale(ring.size) / 2,
+                backgroundColor: colors.white,
+                opacity: ring.opacity,
+              }}
+            />
+          ))}
 
           <View style={{ alignItems: 'center', marginTop: scale(8) }}>
-            <View style={{ width: scale(105.512), height: scale(124), overflow: 'hidden' }}>
-              <Image
-                source={mascotImage}
-                style={{
-                  position: 'absolute',
-                  left: mascotCrop.left,
-                  top: mascotCrop.top,
-                  width: mascotCrop.width,
-                  height: mascotCrop.height,
-                }}
-              />
+            <View
+              style={Platform.select({
+                ios: {
+                  // Matches node 77:2159's own CSS shadow spec:
+                  // 0px -1px 46px 0px rgba(255,255,255,0.15).
+                  shadowColor: colors.white,
+                  shadowOpacity: 0.15,
+                  shadowRadius: scale(46),
+                  shadowOffset: { width: 0, height: scale(-1) },
+                },
+                default: {},
+              })}
+            >
+              <View style={{ width: scale(105.512), height: scale(124), overflow: 'hidden' }}>
+                <Image
+                  source={mascotImage}
+                  style={{
+                    position: 'absolute',
+                    left: mascotCrop.left,
+                    top: mascotCrop.top,
+                    width: mascotCrop.width,
+                    height: mascotCrop.height,
+                  }}
+                />
+              </View>
             </View>
           </View>
 
