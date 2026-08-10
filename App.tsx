@@ -1,6 +1,6 @@
 import { Asset } from 'expo-asset';
 import React, { useCallback, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback, View } from 'react-native';
 import * as SplashScreenModule from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
@@ -58,37 +58,43 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <View style={{ flex: 1 }} onLayout={onLayout}>
-        {screen === 'onboarding' && (
-          <OnboardingCarouselScreen onFinish={() => setScreen('login')} />
-        )}
-        {screen === 'login' && (
-          <LoginMobileNumberScreen
-            onContinue={(phone) => {
-              setPhoneNumber(phone);
-              setScreen('otp');
-            }}
-            onSkip={() => console.log('Skipped login')}
-          />
-        )}
-        {screen === 'otp' && (
-          <OtpVerificationScreen
-            phoneNumber={phoneNumber}
-            onBack={() => setScreen('login')}
-            onVerify={() => setScreen('registrationName')}
-            onResend={() => console.log('Resend OTP requested')}
-          />
-        )}
-        {screen === 'registrationName' && (
-          <RegistrationNameScreen onContinue={() => setScreen('registrationClass')} />
-        )}
-        {screen === 'registrationClass' && (
-          <RegistrationClassScreen
-            onBack={() => setScreen('registrationName')}
-            onSelectClass={(classId) => console.log('Class selected:', classId)}
-          />
-        )}
-      </View>
+      {/* RN doesn't dismiss the keyboard on an outside tap by default —
+          this wrapper does it globally for every screen. Touches on actual
+          controls (TextInput, Pressable, etc.) are still handled by those
+          elements first; only otherwise-unhandled taps reach this. */}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <View style={{ flex: 1 }} onLayout={onLayout}>
+          {screen === 'onboarding' && (
+            <OnboardingCarouselScreen onFinish={() => setScreen('login')} />
+          )}
+          {screen === 'login' && (
+            <LoginMobileNumberScreen
+              onContinue={(phone) => {
+                setPhoneNumber(phone);
+                setScreen('otp');
+              }}
+              onSkip={() => console.log('Skipped login')}
+            />
+          )}
+          {screen === 'otp' && (
+            <OtpVerificationScreen
+              phoneNumber={phoneNumber}
+              onBack={() => setScreen('login')}
+              onVerify={() => setScreen('registrationName')}
+              onResend={() => console.log('Resend OTP requested')}
+            />
+          )}
+          {screen === 'registrationName' && (
+            <RegistrationNameScreen onContinue={() => setScreen('registrationClass')} />
+          )}
+          {screen === 'registrationClass' && (
+            <RegistrationClassScreen
+              onBack={() => setScreen('registrationName')}
+              onSelectClass={(classId) => console.log('Class selected:', classId)}
+            />
+          )}
+        </View>
+      </TouchableWithoutFeedback>
     </SafeAreaProvider>
   );
 }
