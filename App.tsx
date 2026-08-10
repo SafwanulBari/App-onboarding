@@ -14,6 +14,7 @@ import {
   SpaceGrotesk_300Light,
   SpaceGrotesk_700Bold,
 } from '@expo-google-fonts/space-grotesk';
+import { NotoSansBengali_600SemiBold } from '@expo-google-fonts/noto-sans-bengali';
 import OnboardingCarouselScreen from './src/screens/OnboardingCarouselScreen';
 import LoginMobileNumberScreen from './src/screens/LoginMobileNumberScreen';
 import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
@@ -33,6 +34,7 @@ export default function App() {
     BalooDa2_700Bold,
     SpaceGrotesk_300Light,
     SpaceGrotesk_700Bold,
+    NotoSansBengali_600SemiBold,
   });
   const [assetsLoaded, setAssetsLoaded] = useState(false);
   const [screen, setScreen] = useState<Screen>('onboarding');

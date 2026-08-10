@@ -33,6 +33,13 @@ export const colors = {
   // "2. Registration - Name" screen background gradient (light blue -> white)
   registrationGradientStart: '#E8F1FC',
   registrationGradientEnd: '#FFFFFF',
+  // The class-numeral glyphs on "4. Registration - Class" (node 54:2297) are
+  // a radial gradient (primary500 -> a dark navy) in the design. Reproducing
+  // gradient text in RN needs a native masked-view, which this project
+  // deliberately avoids (see RegistrationClassOptionCard) — this flat color
+  // is the gradient's visual midtone (its 50% stop) as the closest safe
+  // single-color approximation, rather than the lighter flat primary500.
+  classNumeralBlue: '#3341B9',
 };
 
 // Baloo Da 2 supports Bengali glyphs and is the family used throughout the design.
@@ -44,4 +51,8 @@ export const fonts = {
   // Space Grotesk is used only for the "SHIKHO AI" wordmark lockup (slide 3).
   spaceGroteskLight: 'SpaceGrotesk_300Light',
   spaceGroteskBold: 'SpaceGrotesk_700Bold',
+  // Noto Sans Bengali is used only for the large class-numeral glyphs on the
+  // "4. Registration - Class" screen (Figma node 54:2297) — the design
+  // specs that one element in a different family from the rest of the UI.
+  notoSansBengaliSemiBold: 'NotoSansBengali_600SemiBold',
 };
