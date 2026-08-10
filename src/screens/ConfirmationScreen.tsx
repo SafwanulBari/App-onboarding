@@ -5,20 +5,20 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
 import { CONFIRMATION_BURST_SVG_XML } from '../assets/svg/confirmationBurst';
+import { CONFIRMATION_ICON_LEARN_SVG_XML } from '../assets/svg/confirmationIconLearn';
+import { CONFIRMATION_ICON_EBOOK_SVG_XML } from '../assets/svg/confirmationIconEbook';
+import { CONFIRMATION_ICON_EXAM_SVG_XML } from '../assets/svg/confirmationIconExam';
+import { CONFIRMATION_ICON_REPORT_SVG_XML } from '../assets/svg/confirmationIconReport';
+import { CONFIRMATION_ICON_AI_SVG_XML } from '../assets/svg/confirmationIconAi';
 import ConfettiOverlay from '../components/ConfettiOverlay';
 import { resolveCrop } from '../onboarding/resolveCrop';
 import { colors, fonts, useScale } from '../theme/theme';
 
 const mascotImage = require('../../assets/confirmation/mascot-celebrate.png');
-const learnIcon = require('../../assets/confirmation/feature-learn.png');
-const ebookIcon = require('../../assets/confirmation/feature-ebook.png');
-const examIcon = require('../../assets/confirmation/feature-exam.png');
-const reportIcon = require('../../assets/confirmation/feature-report.png');
-const aiIcon = require('../../assets/confirmation/feature-ai.png');
 
 type Feature = {
   id: string;
-  icon: ReturnType<typeof require>;
+  iconXml: string;
   iconWidth: number;
   iconHeight: number;
   title: string;
@@ -28,7 +28,7 @@ type Feature = {
 const FEATURES: Feature[] = [
   {
     id: 'learn',
-    icon: learnIcon,
+    iconXml: CONFIRMATION_ICON_LEARN_SVG_XML,
     iconWidth: 56.953,
     iconHeight: 54,
     title: 'শিখুন',
@@ -36,7 +36,7 @@ const FEATURES: Feature[] = [
   },
   {
     id: 'ebook',
-    icon: ebookIcon,
+    iconXml: CONFIRMATION_ICON_EBOOK_SVG_XML,
     iconWidth: 48.24,
     iconHeight: 53.893,
     title: 'ই-বুক ও রিসোর্স',
@@ -44,7 +44,7 @@ const FEATURES: Feature[] = [
   },
   {
     id: 'exam',
-    icon: examIcon,
+    iconXml: CONFIRMATION_ICON_EXAM_SVG_XML,
     iconWidth: 56.109,
     iconHeight: 54,
     title: 'পরীক্ষা ও মূল্যায়ন',
@@ -52,7 +52,7 @@ const FEATURES: Feature[] = [
   },
   {
     id: 'report',
-    icon: reportIcon,
+    iconXml: CONFIRMATION_ICON_REPORT_SVG_XML,
     iconWidth: 42.3,
     iconHeight: 53.866,
     title: 'রিপোর্ট',
@@ -60,7 +60,7 @@ const FEATURES: Feature[] = [
   },
   {
     id: 'ai',
-    icon: aiIcon,
+    iconXml: CONFIRMATION_ICON_AI_SVG_XML,
     iconWidth: 55.055,
     iconHeight: 54,
     title: 'AI সহায়তা',
@@ -99,26 +99,25 @@ export default function ConfirmationScreen({ onGoHome }: Props) {
           needs to be light here — every other screen in the app is on a
           light background and uses "dark". */}
       <StatusBar style="light" />
-      <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <View style={{ flex: 1, overflow: 'hidden' }}>
-          {/* Decorative background layer — a large, very faint radial
-              starburst behind the mascot (54:1868), purely decorative and
-              layered behind the real content below. The design also has a
-              soft glow ellipse behind the mascot (54:1557), a heavily
-              Gaussian-blurred circle — react-native-svg's filter-primitive
-              support is inconsistent on native, and two flat-circle
-              approximations (one hard-edged disc, then several concentric
-              rings) both read as visible circles rather than a soft glow,
-              so it's left out entirely rather than keep guessing; the
-              mascot's own drop-shadow below is what's left standing in
-              for it. */}
-          <SvgXml
-            xml={CONFIRMATION_BURST_SVG_XML}
-            width={scale(975.95)}
-            height={scale(973.828)}
-            style={{ position: 'absolute', left: scale(-282), top: scale(-586) }}
-          />
 
+      {/* Decorative starburst behind the mascot (54:1868) — a direct child
+          of the full-bleed LinearGradient (not nested inside the
+          SafeAreaView below) and positioned with the design's own raw
+          frame coordinates (top:-542, matching Figma's y=0 at the true top
+          of the screen). Nesting it inside the safe-area content earlier
+          meant its top (already mostly off-screen above the frame) was
+          measured from the safe-area inset instead of the real screen top,
+          leaving a visible gap of plain gradient before the rays before —
+          this way it lines up with the status bar exactly like the design. */}
+      <SvgXml
+        xml={CONFIRMATION_BURST_SVG_XML}
+        width={scale(975.95)}
+        height={scale(973.828)}
+        style={{ position: 'absolute', left: scale(-282), top: scale(-542) }}
+      />
+
+      <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
+        <View style={{ flex: 1 }}>
           <View style={{ alignItems: 'center', marginTop: scale(8) }}>
             <View
               style={Platform.select({
@@ -189,11 +188,7 @@ export default function ConfirmationScreen({ onGoHome }: Props) {
             {FEATURES.map((feature) => (
               <View key={feature.id} style={{ flexDirection: 'row', alignItems: 'center', gap: scale(24) }}>
                 <View style={{ width: scale(60), height: scale(54), alignItems: 'center', justifyContent: 'center' }}>
-                  <Image
-                    source={feature.icon}
-                    style={{ width: scale(feature.iconWidth), height: scale(feature.iconHeight) }}
-                    resizeMode="contain"
-                  />
+                  <SvgXml xml={feature.iconXml} width={scale(feature.iconWidth)} height={scale(feature.iconHeight)} />
                 </View>
                 <View style={{ flex: 1, gap: scale(4) }}>
                   <Text
