@@ -67,15 +67,6 @@ const FEATURES: Feature[] = [
   },
 ];
 
-// Approximates the design's Gaussian-blurred glow ellipse (54:1557) as a
-// soft radial falloff — see the comment where these are rendered.
-const GLOW_RINGS = [
-  { size: 100, opacity: 0.14 },
-  { size: 174, opacity: 0.1 },
-  { size: 280, opacity: 0.06 },
-  { size: 400, opacity: 0.03 },
-];
-
 type Props = {
   onGoHome?: () => void;
 };
@@ -107,38 +98,21 @@ export default function ConfirmationScreen({ onGoHome }: Props) {
         <View style={{ flex: 1, overflow: 'hidden' }}>
           {/* Decorative background layer — a large, very faint radial
               starburst behind the mascot (54:1868), purely decorative and
-              layered behind the real content below. (The soft glow ellipse
-              behind the mascot, 54:1557, is a heavily Gaussian-blurred
-              circle in the design — react-native-svg's filter-primitive
-              support is inconsistent on native, so instead of inlining
-              that filter or approximating it with one flat-opacity circle
-              (which read as a hard-edged "background disc", not a soft
-              glow — see git history), it's approximated below with
-              several concentric low-opacity circles of increasing size,
-              which fades out with no visible edge on every platform. */}
+              layered behind the real content below. The design also has a
+              soft glow ellipse behind the mascot (54:1557), a heavily
+              Gaussian-blurred circle — react-native-svg's filter-primitive
+              support is inconsistent on native, and two flat-circle
+              approximations (one hard-edged disc, then several concentric
+              rings) both read as visible circles rather than a soft glow,
+              so it's left out entirely rather than keep guessing; the
+              mascot's own drop-shadow below is what's left standing in
+              for it. */}
           <SvgXml
             xml={CONFIRMATION_BURST_SVG_XML}
             width={scale(975.95)}
             height={scale(973.828)}
             style={{ position: 'absolute', left: scale(-282), top: scale(-586) }}
           />
-          {GLOW_RINGS.map((ring) => (
-            <View
-              key={ring.size}
-              style={{
-                position: 'absolute',
-                left: '50%',
-                top: scale(62),
-                width: scale(ring.size),
-                height: scale(ring.size),
-                marginLeft: -scale(ring.size) / 2,
-                marginTop: -scale(ring.size) / 2,
-                borderRadius: scale(ring.size) / 2,
-                backgroundColor: colors.white,
-                opacity: ring.opacity,
-              }}
-            />
-          ))}
 
           <View style={{ alignItems: 'center', marginTop: scale(8) }}>
             <View
