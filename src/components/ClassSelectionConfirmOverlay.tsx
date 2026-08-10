@@ -3,6 +3,14 @@ import { Animated, Image, Text, View } from 'react-native';
 import { resolveCrop } from '../onboarding/resolveCrop';
 import { colors, fonts, useScale } from '../theme/theme';
 
+// Re-fetched from a fresh check of node 54:2371: the design's thumbs-up
+// mascot is now the blue-head/pink-arm bird (matching the rest of the
+// mascot family, see RegistrationMascotCard) rather than the orange/blue
+// one this originally shipped with. The re-fetch also carried small
+// (single-digit px) position/size shifts for the mascot and bubble below,
+// from Figma's own layout recalculating around the new asset's slightly
+// different natural proportions — applied here for exact fidelity, even
+// though the bubble's own design (shape, text, colors) is unchanged.
 const mascotThumbsUpImage = require('../../assets/registration/mascot-thumbsup.png');
 
 // Design px the mascot/bubble group starts offscreen to the right of the
@@ -22,8 +30,8 @@ export default function ClassSelectionConfirmOverlay({ progress }: Props) {
   const scale = useScale();
 
   const mascotCrop = resolveCrop(
-    { left: '-6.43%', top: '-7.85%', width: '106.41%', height: '110.91%' },
-    scale(161.257),
+    { left: '-6.12%', top: '-12.59%', width: '106.09%', height: '115.01%' },
+    scale(167.71),
     scale(164)
   );
 
@@ -48,8 +56,8 @@ export default function ClassSelectionConfirmOverlay({ progress }: Props) {
       <View
         style={{
           position: 'absolute',
-          left: scale(49),
-          top: scale(36),
+          left: scale(51),
+          top: scale(27),
           width: scale(211),
           height: scale(88),
           borderRadius: scale(16),
@@ -80,9 +88,9 @@ export default function ClassSelectionConfirmOverlay({ progress }: Props) {
       <View
         style={{
           position: 'absolute',
-          left: scale(260.37),
+          left: scale(254),
           top: 0,
-          width: scale(161.257),
+          width: scale(167.71),
           height: scale(164),
           overflow: 'hidden',
         }}
