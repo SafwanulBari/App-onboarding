@@ -7,11 +7,6 @@ import { resolveCrop } from '../onboarding/resolveCrop';
 import { colors, fonts, useScale } from '../theme/theme';
 
 const mascotImage = require('../../assets/registration/mascot.png');
-// The "everything checks out" pose (Figma node 77:2143, image520) used
-// once on "7. Registration - Set Pasword - Typing - Filled" (node
-// 54:2095) when both password fields are complete and match — a
-// genuinely different source image, not a recolor/crop of the default one.
-const mascotCheckImage = require('../../assets/registration/mascot-check.png');
 
 type Props = {
   title: string;
@@ -24,33 +19,34 @@ type Props = {
   // Set Pasword" (node 54:1870 etc.), which specs SemiBold — pass
   // "semiBold" there. Defaults to Bold to match every other screen.
   titleWeight?: 'bold' | 'semiBold';
-  // See mascotCheckImage above. Defaults to the usual writing-mascot pose.
-  mascotVariant?: 'default' | 'success';
 };
 
 // Mascot + speech-bubble question card shared by every registration step
-// (Figma nodes 54:3240 "2. Registration - Name" and 54:2318 "4.
-// Registration - Class" use the identical mascot/bubble geometry, just
-// with different title/subtitle copy) — factored out here so future
+// (Figma nodes 54:3240 "2. Registration - Name", 54:2318 "4. Registration
+// - Class", etc. use the identical mascot/bubble geometry, just with
+// different title/subtitle copy) — factored out here so future
 // registration screens reuse it instead of duplicating this layout.
-export default function RegistrationMascotCard({
-  title,
-  subtitle,
-  bubbleSize = 'default',
-  titleWeight = 'bold',
-  mascotVariant = 'default',
-}: Props) {
+//
+// The mascot image/crop below was re-verified against a fresh fetch of
+// node 54:3221 ("2. Registration - Name") — it's the blue-head/pink-arm
+// "writing a checklist" pose, not the earlier orange/blue mascot.png this
+// component originally shipped with. That earlier asset was simply wrong
+// (grabbed before this project was being careful about re-verifying each
+// node instead of assuming one early fetch generalized) — confirmed by
+// diffing it byte-for-byte against the asset a later, more careful fetch
+// used for "7. Registration - Set Pasword"'s password-match state
+// (previously modeled here as a separate `mascotVariant: 'success'`),
+// which turned out to be pixel-identical. There was never a second pose;
+// every registration screen's default mascot is this one.
+export default function RegistrationMascotCard({ title, subtitle, bubbleSize = 'default', titleWeight = 'bold' }: Props) {
   const scale = useScale();
   const isTall = bubbleSize === 'tall';
   const bubbleHeight = isTall ? 134 : 107;
-  const isSuccess = mascotVariant === 'success';
 
   const mascotCrop = resolveCrop(
-    isSuccess
-      ? { left: '-17.09%', top: '0%', width: '131.14%', height: '108.42%' }
-      : { left: '-16.37%', top: '-5.37%', width: '130.52%', height: '110.72%' },
+    { left: '-17.09%', top: '0%', width: '131.14%', height: '108.42%' },
     scale(56),
-    scale(54)
+    scale(55.166)
   );
 
   return (
@@ -64,13 +60,13 @@ export default function RegistrationMascotCard({
       <View
         style={{
           width: scale(56),
-          height: scale(54),
+          height: scale(55.166),
           borderRadius: scale(8),
           overflow: 'hidden',
         }}
       >
         <Image
-          source={isSuccess ? mascotCheckImage : mascotImage}
+          source={mascotImage}
           style={{
             position: 'absolute',
             left: mascotCrop.left,

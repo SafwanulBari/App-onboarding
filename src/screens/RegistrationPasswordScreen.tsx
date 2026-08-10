@@ -79,7 +79,6 @@ export default function RegistrationPasswordScreen({ onBack, onSave }: Props) {
               title="পাসওয়ার্ড সেট করো"
               subtitle="পরবর্তীতে সহজেই লগ ইন করতে পাসওয়ার্ড সেট করে নাও"
               titleWeight="semiBold"
-              mascotVariant={isSaveEnabled ? 'success' : 'default'}
             />
           </View>
 
