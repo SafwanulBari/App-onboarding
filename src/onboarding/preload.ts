@@ -12,4 +12,5 @@ export const APP_IMAGE_MODULES = [
   require('../../assets/onboarding/badge-icon-3.png'),
   require('../../assets/login/flag-bd.png'),
   require('../../assets/registration/mascot.png'),
+  require('../../assets/registration/mascot-thumbsup.png'),
 ];
