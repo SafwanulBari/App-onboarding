@@ -20,11 +20,18 @@ import LoginMobileNumberScreen from './src/screens/LoginMobileNumberScreen';
 import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
 import RegistrationNameScreen from './src/screens/RegistrationNameScreen';
 import RegistrationClassScreen from './src/screens/RegistrationClassScreen';
+import RegistrationBatchScreen from './src/screens/RegistrationBatchScreen';
 import { APP_IMAGE_MODULES } from './src/onboarding/preload';
 
 SplashScreenModule.preventAutoHideAsync().catch(() => {});
 
-type Screen = 'onboarding' | 'login' | 'otp' | 'registrationName' | 'registrationClass';
+type Screen =
+  | 'onboarding'
+  | 'login'
+  | 'otp'
+  | 'registrationName'
+  | 'registrationClass'
+  | 'registrationBatch';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -98,7 +105,16 @@ export default function App() {
         {screen === 'registrationClass' && (
           <RegistrationClassScreen
             onBack={() => setScreen('registrationName')}
-            onSelectClass={(classId) => console.log('Class selected:', classId)}
+            onSelectClass={(classId) => {
+              console.log('Class selected:', classId);
+              setScreen('registrationBatch');
+            }}
+          />
+        )}
+        {screen === 'registrationBatch' && (
+          <RegistrationBatchScreen
+            onBack={() => setScreen('registrationClass')}
+            onSelectBatch={(batch) => console.log('Batch selected:', batch)}
           />
         )}
       </View>

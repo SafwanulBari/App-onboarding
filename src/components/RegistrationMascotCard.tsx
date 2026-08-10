@@ -2,6 +2,7 @@ import React from 'react';
 import { Image, Text, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { REGISTRATION_BUBBLE_SVG_XML } from '../assets/svg/registrationBubble';
+import { REGISTRATION_BUBBLE_TALL_SVG_XML } from '../assets/svg/registrationBubbleTall';
 import { resolveCrop } from '../onboarding/resolveCrop';
 import { colors, fonts, useScale } from '../theme/theme';
 
@@ -10,6 +11,10 @@ const mascotImage = require('../../assets/registration/mascot.png');
 type Props = {
   title: string;
   subtitle: string;
+  // "5. Registration - Batch" (node 54:2452) has a two-line title, so its
+  // speech bubble is taller than the other registration steps' — pass
+  // "tall" there. Defaults to the standard single-line-title bubble.
+  bubbleSize?: 'default' | 'tall';
 };
 
 // Mascot + speech-bubble question card shared by every registration step
@@ -17,8 +22,10 @@ type Props = {
 // Registration - Class" use the identical mascot/bubble geometry, just
 // with different title/subtitle copy) — factored out here so future
 // registration screens reuse it instead of duplicating this layout.
-export default function RegistrationMascotCard({ title, subtitle }: Props) {
+export default function RegistrationMascotCard({ title, subtitle, bubbleSize = 'default' }: Props) {
   const scale = useScale();
+  const isTall = bubbleSize === 'tall';
+  const bubbleHeight = isTall ? 134 : 107;
 
   const mascotCrop = resolveCrop(
     { left: '-16.37%', top: '-5.37%', width: '130.52%', height: '110.72%' },
@@ -54,11 +61,11 @@ export default function RegistrationMascotCard({ title, subtitle }: Props) {
         />
       </View>
 
-      <View style={{ flex: 1, height: scale(107), marginLeft: scale(4) }}>
+      <View style={{ flex: 1, height: scale(bubbleHeight), marginLeft: scale(4) }}>
         <SvgXml
-          xml={REGISTRATION_BUBBLE_SVG_XML}
+          xml={isTall ? REGISTRATION_BUBBLE_TALL_SVG_XML : REGISTRATION_BUBBLE_SVG_XML}
           width="100%"
-          height={scale(107)}
+          height={scale(bubbleHeight)}
           style={{ position: 'absolute', top: 0, left: 0 }}
         />
         <View style={{ paddingLeft: scale(24.48), paddingRight: scale(20), paddingTop: scale(16) }}>

@@ -15,7 +15,7 @@ import { colors, useScale } from '../theme/theme';
 const PROGRESS = 154 / 336;
 
 const CONFIRM_SLIDE_IN_MS = 350;
-const CONFIRM_HOLD_MS = 1500;
+const CONFIRM_HOLD_MS = 1000;
 const CONFIRM_SLIDE_OUT_MS = 280;
 
 type ClassOption = {
