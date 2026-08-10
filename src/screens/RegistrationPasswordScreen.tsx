@@ -4,7 +4,11 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
-import { CHECK_SMALL_SVG_XML, CHECK_SMALL_SUCCESS_SVG_XML } from '../assets/svg/checkSmall';
+import {
+  CHECK_SMALL_SVG_XML,
+  CHECK_SMALL_SUCCESS_SVG_XML,
+  CHECK_SMALL_SUCCESS_14_SVG_XML,
+} from '../assets/svg/checkSmall';
 import { ERROR_X_SVG_XML } from '../assets/svg/errorX';
 import { EYE_HIDE_SVG_XML } from '../assets/svg/eyeHide';
 import { EYE_SHOW_SVG_XML } from '../assets/svg/eyeShow';
@@ -74,6 +78,8 @@ export default function RegistrationPasswordScreen({ onBack, onSave }: Props) {
             <RegistrationMascotCard
               title="পাসওয়ার্ড সেট করো"
               subtitle="পরবর্তীতে সহজেই লগ ইন করতে পাসওয়ার্ড সেট করে নাও"
+              titleWeight="semiBold"
+              mascotVariant={isSaveEnabled ? 'success' : 'default'}
             />
           </View>
 
@@ -190,6 +196,20 @@ export default function RegistrationPasswordScreen({ onBack, onSave }: Props) {
                         }}
                       >
                         পাসওয়ার্ড সঠিক নয়
+                      </Text>
+                    </View>
+                  ) : isConfirmComplete ? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(6) }}>
+                      <SvgXml xml={CHECK_SMALL_SUCCESS_14_SVG_XML} width={scale(14)} height={scale(14)} />
+                      <Text
+                        style={{
+                          fontFamily: fonts.regular,
+                          fontSize: scale(12),
+                          lineHeight: scale(12) * 1.6,
+                          color: colors.success600,
+                        }}
+                      >
+                        সঠিক
                       </Text>
                     </View>
                   ) : (

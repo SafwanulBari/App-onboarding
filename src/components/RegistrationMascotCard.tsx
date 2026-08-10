@@ -7,6 +7,11 @@ import { resolveCrop } from '../onboarding/resolveCrop';
 import { colors, fonts, useScale } from '../theme/theme';
 
 const mascotImage = require('../../assets/registration/mascot.png');
+// The "everything checks out" pose (Figma node 77:2143, image520) used
+// once on "7. Registration - Set Pasword - Typing - Filled" (node
+// 54:2095) when both password fields are complete and match — a
+// genuinely different source image, not a recolor/crop of the default one.
+const mascotCheckImage = require('../../assets/registration/mascot-check.png');
 
 type Props = {
   title: string;
@@ -15,6 +20,12 @@ type Props = {
   // speech bubble is taller than the other registration steps' — pass
   // "tall" there. Defaults to the standard single-line-title bubble.
   bubbleSize?: 'default' | 'tall';
+  // Every registration step's title is Bold except "7. Registration -
+  // Set Pasword" (node 54:1870 etc.), which specs SemiBold — pass
+  // "semiBold" there. Defaults to Bold to match every other screen.
+  titleWeight?: 'bold' | 'semiBold';
+  // See mascotCheckImage above. Defaults to the usual writing-mascot pose.
+  mascotVariant?: 'default' | 'success';
 };
 
 // Mascot + speech-bubble question card shared by every registration step
@@ -22,13 +33,22 @@ type Props = {
 // Registration - Class" use the identical mascot/bubble geometry, just
 // with different title/subtitle copy) — factored out here so future
 // registration screens reuse it instead of duplicating this layout.
-export default function RegistrationMascotCard({ title, subtitle, bubbleSize = 'default' }: Props) {
+export default function RegistrationMascotCard({
+  title,
+  subtitle,
+  bubbleSize = 'default',
+  titleWeight = 'bold',
+  mascotVariant = 'default',
+}: Props) {
   const scale = useScale();
   const isTall = bubbleSize === 'tall';
   const bubbleHeight = isTall ? 134 : 107;
+  const isSuccess = mascotVariant === 'success';
 
   const mascotCrop = resolveCrop(
-    { left: '-16.37%', top: '-5.37%', width: '130.52%', height: '110.72%' },
+    isSuccess
+      ? { left: '-17.09%', top: '0%', width: '131.14%', height: '108.42%' }
+      : { left: '-16.37%', top: '-5.37%', width: '130.52%', height: '110.72%' },
     scale(56),
     scale(54)
   );
@@ -50,7 +70,7 @@ export default function RegistrationMascotCard({ title, subtitle, bubbleSize = '
         }}
       >
         <Image
-          source={mascotImage}
+          source={isSuccess ? mascotCheckImage : mascotImage}
           style={{
             position: 'absolute',
             left: mascotCrop.left,
@@ -71,7 +91,7 @@ export default function RegistrationMascotCard({ title, subtitle, bubbleSize = '
         <View style={{ paddingLeft: scale(24.48), paddingRight: scale(20), paddingTop: scale(16) }}>
           <Text
             style={{
-              fontFamily: fonts.bold,
+              fontFamily: titleWeight === 'semiBold' ? fonts.semiBold : fonts.bold,
               fontSize: scale(18),
               lineHeight: scale(18) * 1.5,
               color: colors.gray900,

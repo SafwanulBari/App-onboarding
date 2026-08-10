@@ -26,3 +26,20 @@ export const CHECK_SMALL_SUCCESS_SVG_XML = `<svg preserveAspectRatio="none" over
 </clipPath>
 </defs>
 </svg>`;
+
+// Source: Figma node 54:2188 "Check" — the same 14px checkmark as
+// CHECK_SMALL_SVG_XML but green, next to "সঠিক" (correct) once
+// confirm-password matches password, per "7. Registration - Set
+// Pasword - Typing - Filled" (node 54:2095). A separate asset from
+// CHECK_SMALL_SUCCESS_SVG_XML above since that one is 16px (used on the
+// password field) while this one stays 14px (used on confirm-password).
+export const CHECK_SMALL_SUCCESS_14_SVG_XML = `<svg preserveAspectRatio="none" overflow="visible" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Check" clip-path="url(#clip0_0_12)">
+<path id="Vector_2" d="M2.1875 7.875L5.25 10.9375L12.25 3.9375" stroke="#16A34A" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_0_12">
+<rect width="14" height="14" fill="white"/>
+</clipPath>
+</defs>
+</svg>`;
