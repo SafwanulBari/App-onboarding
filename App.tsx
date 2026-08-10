@@ -18,11 +18,12 @@ import OnboardingCarouselScreen from './src/screens/OnboardingCarouselScreen';
 import LoginMobileNumberScreen from './src/screens/LoginMobileNumberScreen';
 import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
 import RegistrationNameScreen from './src/screens/RegistrationNameScreen';
+import RegistrationClassScreen from './src/screens/RegistrationClassScreen';
 import { APP_IMAGE_MODULES } from './src/onboarding/preload';
 
 SplashScreenModule.preventAutoHideAsync().catch(() => {});
 
-type Screen = 'onboarding' | 'login' | 'otp' | 'registrationName';
+type Screen = 'onboarding' | 'login' | 'otp' | 'registrationName' | 'registrationClass';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -79,7 +80,13 @@ export default function App() {
           />
         )}
         {screen === 'registrationName' && (
-          <RegistrationNameScreen onContinue={(name) => console.log('Name entered:', name)} />
+          <RegistrationNameScreen onContinue={() => setScreen('registrationClass')} />
+        )}
+        {screen === 'registrationClass' && (
+          <RegistrationClassScreen
+            onBack={() => setScreen('registrationName')}
+            onSelectClass={(classId) => console.log('Class selected:', classId)}
+          />
         )}
       </View>
     </SafeAreaProvider>
