@@ -1,6 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { TextInput, View } from 'react-native';
-import { colors, useScale } from '../theme/theme';
+import { SvgXml } from 'react-native-svg';
+import { Text, TextInput, View } from 'react-native';
+import { PASSWORD_MASK_STAR_SVG_XML } from '../assets/svg/passwordMaskStar';
+import { colors, fonts, useScale } from '../theme/theme';
 import { toWesternDigits } from '../utils/bengaliDigits';
 
 type Props = {
@@ -8,19 +10,26 @@ type Props = {
   value: string;
   onChangeValue: (value: string) => void;
   disabled?: boolean;
+  // "পিন দেখো" (show PIN) toggle — when true, every filled box shows its
+  // plain digit; when false (default), only the box currently being typed
+  // reveals its digit and the rest show the masked star. Driven by the
+  // parent screen (only the primary password field has this toggle in the
+  // design, not confirm-password).
+  revealed?: boolean;
 };
 
-// A 6-box numeric password entry on "7. Registration - Set Pasword"
-// (Figma node 54:1870, boxes 54:1908 for the password field and 54:1924
-// for confirm-password). Same invisible-TextInput-over-visual-boxes
-// pattern as OtpBoxInput, but: a tighter box gap (16.8 vs 20, per this
-// screen's own metadata), a white/gray300-border empty state instead of
-// OTP's gray200 default, entered digits render as a masked dot rather
-// than the plain numeral (this is a password, not a one-time code shown
-// in an SMS), and an optional `disabled` prop — the design shows the
-// confirm-password field in a visibly inactive gray50 state until the
-// first password is complete; RegistrationPasswordScreen drives that.
-export default function PasswordBoxInput({ length, value, onChangeValue, disabled }: Props) {
+// A 6-box numeric password entry. Same invisible-TextInput-over-visual-
+// boxes pattern as OtpBoxInput, matching Figma nodes 54:1870 (default/
+// empty state) and 54:2013 ("Typing" state) for "7. Registration - Set
+// Pasword":
+// - Empty box: white (or gray50 if `disabled`) bg, gray300 border.
+// - Filled, not the active box: white bg, gray400 border, masked with a
+//   6-point star glyph (54:2053) rather than a plain dot or digit.
+// - Active box (the one just typed, while focused): accent100 bg,
+//   primary500 1px border, and — unless `revealed` is already showing
+//   everything — its digit is shown in plain text, matching the design's
+//   "reveal the digit you just typed" PIN-entry convention (54:2063/2065).
+export default function PasswordBoxInput({ length, value, onChangeValue, disabled, revealed }: Props) {
   const scale = useScale();
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<TextInput>(null);
@@ -42,11 +51,19 @@ export default function PasswordBoxInput({ length, value, onChangeValue, disable
     >
       <View style={{ flexDirection: 'row', gap: scale(gap) }}>
         {Array.from({ length }).map((_, i) => {
-          const isFilled = !!value[i];
+          const digit = value[i];
+          const isFilled = !!digit;
           const isActive = i === activeIndex;
+          const showDigit = isFilled && (revealed || isActive);
 
           let backgroundColor: string = disabled ? colors.gray50 : colors.white;
-          if (isActive) backgroundColor = colors.accent100;
+          let borderColor: string = colors.gray300;
+          if (isActive) {
+            backgroundColor = colors.accent100;
+            borderColor = colors.primary500;
+          } else if (isFilled) {
+            borderColor = colors.gray400;
+          }
 
           return (
             <View
@@ -56,22 +73,27 @@ export default function PasswordBoxInput({ length, value, onChangeValue, disable
                 height: scale(54),
                 borderRadius: scale(12),
                 backgroundColor,
-                borderWidth: isActive ? scale(2) : scale(1),
-                borderColor: isActive ? colors.primary500 : colors.gray300,
+                borderWidth: scale(1),
+                borderColor,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              {isFilled && (
-                <View
-                  style={{
-                    width: scale(10),
-                    height: scale(10),
-                    borderRadius: scale(5),
-                    backgroundColor: colors.gray900,
-                  }}
-                />
-              )}
+              {isFilled &&
+                (showDigit ? (
+                  <Text
+                    style={{
+                      fontFamily: fonts.medium,
+                      fontSize: scale(18),
+                      lineHeight: scale(18) * 1.6,
+                      color: colors.gray900,
+                    }}
+                  >
+                    {digit}
+                  </Text>
+                ) : (
+                  <SvgXml xml={PASSWORD_MASK_STAR_SVG_XML} width={scale(14)} height={scale(13.3193)} />
+                ))}
             </View>
           );
         })}

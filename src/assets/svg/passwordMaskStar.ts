@@ -1,0 +1,9 @@
+// Source: Figma node 54:2053 "Group" — the masking glyph shown in each
+// already-typed (but not currently active) password box on "7.
+// Registration - Set Pasword - Typing" (node 54:2013), e.g. box 54:2052.
+// A 6-pointed asterisk/sparkle shape, not a plain dot.
+export const PASSWORD_MASK_STAR_SVG_XML = `<svg preserveAspectRatio="none" overflow="visible" width="14" height="13.3193" viewBox="0 0 14 13.3193" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group">
+<path id="Vector" d="M8.96734 5.03614C8.81267 5.03614 8.64848 4.91677 8.60056 4.76967L7.08658 0.110345C7.03866 -0.0367818 6.96134 -0.0367818 6.91342 0.110345L5.39972 4.76967C5.3518 4.9168 5.18761 5.03614 5.03293 5.03614H0.133748C-0.020929 5.03614 -0.045025 5.10984 0.0802124 5.20092L4.04351 8.08007C4.16875 8.17115 4.23152 8.36419 4.18361 8.51132L2.66993 13.1704C2.62202 13.3175 2.68479 13.3631 2.81003 13.2721L6.77333 10.3929C6.89857 10.3019 7.10147 10.3019 7.22671 10.3929L11.19 13.2724C11.3152 13.3634 11.378 13.3178 11.3301 13.1706L9.81639 8.51159C9.76848 8.36447 9.83125 8.17142 9.95649 8.08035L13.9198 5.2012C14.045 5.11012 14.0209 5.03642 13.8663 5.03642H8.96734V5.03614Z" fill="#404040"/>
+</g>
+</svg>`;

@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
 import { CHECK_SMALL_SVG_XML } from '../assets/svg/checkSmall';
+import { EYE_SHOW_SVG_XML } from '../assets/svg/eyeShow';
 import PasswordBoxInput from '../components/PasswordBoxInput';
 import RegistrationHeader from '../components/RegistrationHeader';
 import RegistrationMascotCard from '../components/RegistrationMascotCard';
@@ -25,6 +26,7 @@ export default function RegistrationPasswordScreen({ onBack, onSave }: Props) {
   const scale = useScale();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isPasswordRevealed, setIsPasswordRevealed] = useState(false);
 
   const isPasswordComplete = password.length === PASSWORD_LENGTH;
   // The design shows the confirm-password field in a visibly disabled
@@ -81,20 +83,52 @@ export default function RegistrationPasswordScreen({ onBack, onSave }: Props) {
                 >
                   পাসওয়ার্ড
                 </Text>
-                <PasswordBoxInput length={PASSWORD_LENGTH} value={password} onChangeValue={setPassword} />
+                <PasswordBoxInput
+                  length={PASSWORD_LENGTH}
+                  value={password}
+                  onChangeValue={setPassword}
+                  revealed={isPasswordRevealed}
+                />
               </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
-                <SvgXml xml={CHECK_SMALL_SVG_XML} width={scale(14)} height={scale(14)} />
-                <Text
-                  style={{
-                    fontFamily: fonts.regular,
-                    fontSize: scale(12),
-                    lineHeight: scale(12) * 1.6,
-                    color: colors.gray600,
-                  }}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                }}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(6) }}>
+                  <SvgXml xml={CHECK_SMALL_SVG_XML} width={scale(14)} height={scale(14)} />
+                  <Text
+                    style={{
+                      fontFamily: fonts.regular,
+                      fontSize: scale(12),
+                      lineHeight: scale(12) * 1.6,
+                      color: colors.gray600,
+                    }}
+                  >
+                    *৬ সংখ্যার পাসওয়ার্ড
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={() => setIsPasswordRevealed((v) => !v)}
+                  hitSlop={8}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: scale(6) }}
                 >
-                  *৬ সংখ্যার পাসওয়ার্ড
-                </Text>
+                  <SvgXml xml={EYE_SHOW_SVG_XML} width={scale(16)} height={scale(16)} />
+                  <Text
+                    style={{
+                      fontFamily: fonts.regular,
+                      fontSize: scale(12),
+                      lineHeight: scale(12) * 1.6,
+                      color: colors.primary500,
+                      textDecorationLine: 'underline',
+                    }}
+                  >
+                    {isPasswordRevealed ? 'পিন লুকাও' : 'পিন দেখো'}
+                  </Text>
+                </Pressable>
               </View>
             </View>
 

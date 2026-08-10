@@ -27,6 +27,7 @@ export const colors = {
   gray800: '#434343',
   gray900: '#222222',
   secondaryNeutral600: '#525252',
+  secondaryNeutral700: '#404040',
   secondaryNeutral950: '#0A0A0A',
   secondary500: '#E2008D',
   primary500: '#5468FF',
