@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
@@ -65,7 +65,19 @@ export default function OtpVerificationScreen({ phoneNumber, onBack, onVerify, o
     <View style={{ flex: 1, backgroundColor: colors.white }}>
       <StatusBar style="dark" />
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <View style={{ flex: 1, paddingHorizontal: scale(20) }}>
+        {/* ScrollView so tapping outside the keyboard dismisses it — RN's
+            own built-in behavior, not a manual wrapper. See
+            LoginMobileNumberScreen for why, and why
+            keyboardShouldPersistTaps is "handled" and not "never" (the
+            latter also swallows taps on the Verify button/OTP boxes,
+            verified in-browser before shipping). */}
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: scale(20) }}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+        >
           <Pressable
             onPress={onBack}
             hitSlop={12}
@@ -165,7 +177,7 @@ export default function OtpVerificationScreen({ phoneNumber, onBack, onVerify, o
               ভেরিফাই করো
             </Text>
           </Pressable>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </View>
   );

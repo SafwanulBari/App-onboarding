@@ -1,6 +1,6 @@
 import { Asset } from 'expo-asset';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Keyboard, Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import * as SplashScreenModule from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
@@ -58,50 +58,48 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      {/* RN doesn't dismiss the keyboard on an outside tap by default —
-          this wrapper does it globally for every screen. Touches on actual
-          controls (TextInput, Pressable, etc.) are still handled by those
-          elements first; only otherwise-unhandled taps reach this.
-          Using Pressable, not TouchableWithoutFeedback: the Touchable*
-          legacy components are built on the old responder system and are
-          known to be unreliable under React Native's New Architecture,
-          which Expo SDK 54 enables by default — that's the likely reason
-          the first attempt (TouchableWithoutFeedback) didn't work on
-          device despite being structurally correct. Pressable is the
-          actively-maintained, New-Architecture-safe equivalent. */}
-      <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }}>
-        <View style={{ flex: 1 }} onLayout={onLayout}>
-          {screen === 'onboarding' && (
-            <OnboardingCarouselScreen onFinish={() => setScreen('login')} />
-          )}
-          {screen === 'login' && (
-            <LoginMobileNumberScreen
-              onContinue={(phone) => {
-                setPhoneNumber(phone);
-                setScreen('otp');
-              }}
-              onSkip={() => console.log('Skipped login')}
-            />
-          )}
-          {screen === 'otp' && (
-            <OtpVerificationScreen
-              phoneNumber={phoneNumber}
-              onBack={() => setScreen('login')}
-              onVerify={() => setScreen('registrationName')}
-              onResend={() => console.log('Resend OTP requested')}
-            />
-          )}
-          {screen === 'registrationName' && (
-            <RegistrationNameScreen onContinue={() => setScreen('registrationClass')} />
-          )}
-          {screen === 'registrationClass' && (
-            <RegistrationClassScreen
-              onBack={() => setScreen('registrationName')}
-              onSelectClass={(classId) => console.log('Class selected:', classId)}
-            />
-          )}
-        </View>
-      </Pressable>
+      {/* Keyboard-dismiss-on-outside-tap is handled per-screen (inside
+          each screen that actually has a TextInput, via a ScrollView's
+          built-in tap behavior) rather than with one global wrapper here
+          — see LoginMobileNumberScreen / OtpVerificationScreen /
+          RegistrationNameScreen. Two earlier attempts at a single global
+          wrapper (TouchableWithoutFeedback, then Pressable) both failed
+          on-device despite working in every other check, so this scopes
+          the fix precisely to where it's needed instead of wrapping
+          the whole app (including the onboarding carousel's animation-
+          heavy absolute-positioned layout, which a ScrollView wrapper
+          could risk disturbing). */}
+      <View style={{ flex: 1 }} onLayout={onLayout}>
+        {screen === 'onboarding' && (
+          <OnboardingCarouselScreen onFinish={() => setScreen('login')} />
+        )}
+        {screen === 'login' && (
+          <LoginMobileNumberScreen
+            onContinue={(phone) => {
+              setPhoneNumber(phone);
+              setScreen('otp');
+            }}
+            onSkip={() => console.log('Skipped login')}
+          />
+        )}
+        {screen === 'otp' && (
+          <OtpVerificationScreen
+            phoneNumber={phoneNumber}
+            onBack={() => setScreen('login')}
+            onVerify={() => setScreen('registrationName')}
+            onResend={() => console.log('Resend OTP requested')}
+          />
+        )}
+        {screen === 'registrationName' && (
+          <RegistrationNameScreen onContinue={() => setScreen('registrationClass')} />
+        )}
+        {screen === 'registrationClass' && (
+          <RegistrationClassScreen
+            onBack={() => setScreen('registrationName')}
+            onSelectClass={(classId) => console.log('Class selected:', classId)}
+          />
+        )}
+      </View>
     </SafeAreaProvider>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, Pressable, Text, TextInput, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
@@ -51,7 +51,27 @@ export default function LoginMobileNumberScreen({ onContinue, onSkip }: Props) {
     <View style={{ flex: 1, backgroundColor: colors.white }}>
       <StatusBar style="dark" />
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
-        <View style={{ flex: 1, paddingHorizontal: scale(20), alignItems: 'center' }}>
+        {/* ScrollView (not a plain View + manual Pressable/Keyboard.dismiss
+            wrapper) so tapping outside the keyboard dismisses it — this is
+            RN's own built-in, battle-tested behavior, rather than
+            something we have to wire up ourselves. Two earlier attempts at
+            a manual global wrapper (TouchableWithoutFeedback, then
+            Pressable) both failed on a real device despite checking out
+            in every other way, so this scopes the fix to a mechanism RN
+            already owns.
+            keyboardShouldPersistTaps="handled" (NOT "never" — verified
+            "never" swallows taps on the CTA/skip Pressables below the
+            input, not just background taps, which would have broken the
+            button entirely) lets taps on touchable children (the CTA,
+            skip link) register normally, while a tap on the empty
+            background still dismisses the keyboard. */}
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: scale(20), alignItems: 'center' }}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          showsVerticalScrollIndicator={false}
+          bounces={false}
+        >
           <View style={{ marginTop: scale(48), width: scale(98.4), height: scale(163.744) }}>
             <SvgXml
               xml={LOGIN_ILLUSTRATION_SVG_XML}
@@ -239,7 +259,7 @@ export default function LoginMobileNumberScreen({ onContinue, onSkip }: Props) {
             </Text>
             <SvgXml xml={ARROW_RIGHT_SVG_XML} width={scale(16)} height={scale(16)} />
           </Pressable>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </View>
   );
