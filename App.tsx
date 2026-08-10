@@ -22,6 +22,7 @@ import RegistrationNameScreen from './src/screens/RegistrationNameScreen';
 import RegistrationClassScreen from './src/screens/RegistrationClassScreen';
 import RegistrationBatchScreen from './src/screens/RegistrationBatchScreen';
 import RegistrationGroupScreen from './src/screens/RegistrationGroupScreen';
+import RegistrationPasswordScreen from './src/screens/RegistrationPasswordScreen';
 import { APP_IMAGE_MODULES } from './src/onboarding/preload';
 
 SplashScreenModule.preventAutoHideAsync().catch(() => {});
@@ -33,7 +34,8 @@ type Screen =
   | 'registrationName'
   | 'registrationClass'
   | 'registrationBatch'
-  | 'registrationGroup';
+  | 'registrationGroup'
+  | 'registrationPassword';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -125,7 +127,16 @@ export default function App() {
         {screen === 'registrationGroup' && (
           <RegistrationGroupScreen
             onBack={() => setScreen('registrationBatch')}
-            onSelectGroup={(groupId) => console.log('Group selected:', groupId)}
+            onSelectGroup={(groupId) => {
+              console.log('Group selected:', groupId);
+              setScreen('registrationPassword');
+            }}
+          />
+        )}
+        {screen === 'registrationPassword' && (
+          <RegistrationPasswordScreen
+            onBack={() => setScreen('registrationGroup')}
+            onSave={(password) => console.log('Password saved, length:', password.length)}
           />
         )}
       </View>
