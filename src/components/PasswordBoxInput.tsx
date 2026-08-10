@@ -16,6 +16,10 @@ type Props = {
   // parent screen (only the primary password field has this toggle in the
   // design, not confirm-password).
   revealed?: boolean;
+  // Confirm-password's "wrong password" state (Figma node 54:2196) — every
+  // box gets an error500 border (overriding the active/filled colors)
+  // once confirm-password is complete and doesn't match.
+  error?: boolean;
 };
 
 // A 6-box numeric password entry. Same invisible-TextInput-over-visual-
@@ -29,7 +33,7 @@ type Props = {
 //   primary500 1px border, and — unless `revealed` is already showing
 //   everything — its digit is shown in plain text, matching the design's
 //   "reveal the digit you just typed" PIN-entry convention (54:2063/2065).
-export default function PasswordBoxInput({ length, value, onChangeValue, disabled, revealed }: Props) {
+export default function PasswordBoxInput({ length, value, onChangeValue, disabled, revealed, error }: Props) {
   const scale = useScale();
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<TextInput>(null);
@@ -63,6 +67,10 @@ export default function PasswordBoxInput({ length, value, onChangeValue, disable
             borderColor = colors.primary500;
           } else if (isFilled) {
             borderColor = colors.gray400;
+          }
+          if (error) {
+            backgroundColor = colors.white;
+            borderColor = colors.error500;
           }
 
           return (

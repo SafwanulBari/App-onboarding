@@ -4,7 +4,9 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
-import { CHECK_SMALL_SVG_XML } from '../assets/svg/checkSmall';
+import { CHECK_SMALL_SVG_XML, CHECK_SMALL_SUCCESS_SVG_XML } from '../assets/svg/checkSmall';
+import { ERROR_X_SVG_XML } from '../assets/svg/errorX';
+import { EYE_HIDE_SVG_XML } from '../assets/svg/eyeHide';
 import { EYE_SHOW_SVG_XML } from '../assets/svg/eyeShow';
 import PasswordBoxInput from '../components/PasswordBoxInput';
 import RegistrationHeader from '../components/RegistrationHeader';
@@ -27,6 +29,7 @@ export default function RegistrationPasswordScreen({ onBack, onSave }: Props) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPasswordRevealed, setIsPasswordRevealed] = useState(false);
+  const [isConfirmRevealed, setIsConfirmRevealed] = useState(false);
 
   const isPasswordComplete = password.length === PASSWORD_LENGTH;
   // The design shows the confirm-password field in a visibly disabled
@@ -34,8 +37,12 @@ export default function RegistrationPasswordScreen({ onBack, onSave }: Props) {
   // shown — the standard, safe reading is that it unlocks once the first
   // password is fully entered, rather than being enterable from the start.
   const isConfirmEnabled = isPasswordComplete;
-  const isSaveEnabled =
-    isPasswordComplete && confirmPassword.length === PASSWORD_LENGTH && password === confirmPassword;
+  const isConfirmComplete = confirmPassword.length === PASSWORD_LENGTH;
+  // "7. Registration - Set Pasword - Wrong Pasword" (node 54:2196): only
+  // flag a mismatch once confirm-password is fully entered, not while
+  // it's still partway through being typed.
+  const hasMismatchError = isConfirmEnabled && isConfirmComplete && password !== confirmPassword;
+  const isSaveEnabled = isPasswordComplete && isConfirmComplete && password === confirmPassword;
 
   const handleSave = () => {
     if (isSaveEnabled) {
@@ -99,13 +106,17 @@ export default function RegistrationPasswordScreen({ onBack, onSave }: Props) {
                 }}
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(6) }}>
-                  <SvgXml xml={CHECK_SMALL_SVG_XML} width={scale(14)} height={scale(14)} />
+                  <SvgXml
+                    xml={isPasswordComplete ? CHECK_SMALL_SUCCESS_SVG_XML : CHECK_SMALL_SVG_XML}
+                    width={scale(isPasswordComplete ? 16 : 14)}
+                    height={scale(isPasswordComplete ? 16 : 14)}
+                  />
                   <Text
                     style={{
                       fontFamily: fonts.regular,
                       fontSize: scale(12),
                       lineHeight: scale(12) * 1.6,
-                      color: colors.gray600,
+                      color: isPasswordComplete ? colors.success600 : colors.gray600,
                     }}
                   >
                     *৬ সংখ্যার পাসওয়ার্ড
@@ -116,7 +127,11 @@ export default function RegistrationPasswordScreen({ onBack, onSave }: Props) {
                   hitSlop={8}
                   style={{ flexDirection: 'row', alignItems: 'center', gap: scale(6) }}
                 >
-                  <SvgXml xml={EYE_SHOW_SVG_XML} width={scale(16)} height={scale(16)} />
+                  <SvgXml
+                    xml={isPasswordRevealed ? EYE_HIDE_SVG_XML : EYE_SHOW_SVG_XML}
+                    width={scale(16)}
+                    height={scale(16)}
+                  />
                   <Text
                     style={{
                       fontFamily: fonts.regular,
@@ -126,7 +141,7 @@ export default function RegistrationPasswordScreen({ onBack, onSave }: Props) {
                       textDecorationLine: 'underline',
                     }}
                   >
-                    {isPasswordRevealed ? 'পিন লুকাও' : 'পিন দেখো'}
+                    {isPasswordRevealed ? 'হাইড পিন' : 'পিন দেখো'}
                   </Text>
                 </Pressable>
               </View>
@@ -148,7 +163,62 @@ export default function RegistrationPasswordScreen({ onBack, onSave }: Props) {
                 value={confirmPassword}
                 onChangeValue={setConfirmPassword}
                 disabled={!isConfirmEnabled}
+                revealed={isConfirmRevealed}
+                error={hasMismatchError}
               />
+              {/* This helper/toggle row only exists once confirm-password
+                  has content in the design (54:2287) — there's no row
+                  here at all while it's empty/disabled. */}
+              {isConfirmEnabled && confirmPassword.length > 0 && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                  }}
+                >
+                  {hasMismatchError ? (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
+                      <SvgXml xml={ERROR_X_SVG_XML} width={scale(14)} height={scale(14)} />
+                      <Text
+                        style={{
+                          fontFamily: fonts.regular,
+                          fontSize: scale(12),
+                          lineHeight: scale(12) * 1.6,
+                          color: colors.error500,
+                        }}
+                      >
+                        পাসওয়ার্ড সঠিক নয়
+                      </Text>
+                    </View>
+                  ) : (
+                    <View />
+                  )}
+                  <Pressable
+                    onPress={() => setIsConfirmRevealed((v) => !v)}
+                    hitSlop={8}
+                    style={{ flexDirection: 'row', alignItems: 'center', gap: scale(6) }}
+                  >
+                    <SvgXml
+                      xml={isConfirmRevealed ? EYE_HIDE_SVG_XML : EYE_SHOW_SVG_XML}
+                      width={scale(16)}
+                      height={scale(16)}
+                    />
+                    <Text
+                      style={{
+                        fontFamily: fonts.regular,
+                        fontSize: scale(12),
+                        lineHeight: scale(12) * 1.6,
+                        color: colors.primary500,
+                        textDecorationLine: 'underline',
+                      }}
+                    >
+                      {isConfirmRevealed ? 'হাইড পিন' : 'পিন দেখো'}
+                    </Text>
+                  </Pressable>
+                </View>
+              )}
             </View>
           </View>
 

@@ -33,6 +33,8 @@ export const colors = {
   primary500: '#5468FF',
   accent100: '#E4EEF5',
   dotInactive: 'rgba(255,255,255,0.2)',
+  success600: '#16A34A',
+  error500: '#EF4444',
   // "2. Registration - Name" screen background gradient (light blue -> white)
   registrationGradientStart: '#E8F1FC',
   registrationGradientEnd: '#FFFFFF',
