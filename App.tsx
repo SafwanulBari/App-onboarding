@@ -1,6 +1,6 @@
 import { Asset } from 'expo-asset';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Keyboard, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, Pressable, View } from 'react-native';
 import * as SplashScreenModule from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
@@ -61,8 +61,15 @@ export default function App() {
       {/* RN doesn't dismiss the keyboard on an outside tap by default —
           this wrapper does it globally for every screen. Touches on actual
           controls (TextInput, Pressable, etc.) are still handled by those
-          elements first; only otherwise-unhandled taps reach this. */}
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          elements first; only otherwise-unhandled taps reach this.
+          Using Pressable, not TouchableWithoutFeedback: the Touchable*
+          legacy components are built on the old responder system and are
+          known to be unreliable under React Native's New Architecture,
+          which Expo SDK 54 enables by default — that's the likely reason
+          the first attempt (TouchableWithoutFeedback) didn't work on
+          device despite being structurally correct. Pressable is the
+          actively-maintained, New-Architecture-safe equivalent. */}
+      <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }}>
         <View style={{ flex: 1 }} onLayout={onLayout}>
           {screen === 'onboarding' && (
             <OnboardingCarouselScreen onFinish={() => setScreen('login')} />
@@ -94,7 +101,7 @@ export default function App() {
             />
           )}
         </View>
-      </TouchableWithoutFeedback>
+      </Pressable>
     </SafeAreaProvider>
   );
 }
