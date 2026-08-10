@@ -23,6 +23,7 @@ import RegistrationClassScreen from './src/screens/RegistrationClassScreen';
 import RegistrationBatchScreen from './src/screens/RegistrationBatchScreen';
 import RegistrationGroupScreen from './src/screens/RegistrationGroupScreen';
 import RegistrationPasswordScreen from './src/screens/RegistrationPasswordScreen';
+import ConfirmationScreen from './src/screens/ConfirmationScreen';
 import { APP_IMAGE_MODULES } from './src/onboarding/preload';
 
 SplashScreenModule.preventAutoHideAsync().catch(() => {});
@@ -35,7 +36,8 @@ type Screen =
   | 'registrationClass'
   | 'registrationBatch'
   | 'registrationGroup'
-  | 'registrationPassword';
+  | 'registrationPassword'
+  | 'confirmation';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -136,8 +138,14 @@ export default function App() {
         {screen === 'registrationPassword' && (
           <RegistrationPasswordScreen
             onBack={() => setScreen('registrationGroup')}
-            onSave={(password) => console.log('Password saved, length:', password.length)}
+            onSave={(password) => {
+              console.log('Password saved, length:', password.length);
+              setScreen('confirmation');
+            }}
           />
+        )}
+        {screen === 'confirmation' && (
+          <ConfirmationScreen onGoHome={() => console.log('Go to homepage requested')} />
         )}
       </View>
     </SafeAreaProvider>

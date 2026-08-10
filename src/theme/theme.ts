@@ -38,6 +38,9 @@ export const colors = {
   // "2. Registration - Name" screen background gradient (light blue -> white)
   registrationGradientStart: '#E8F1FC',
   registrationGradientEnd: '#FFFFFF',
+  // Post-registration "Confirmation Page" (node 54:1541) background
+  // gradient (saturated blue -> white).
+  confirmationGradientStart: '#388BE9',
   // The class-numeral glyphs on "4. Registration - Class" (node 54:2297) are
   // a radial gradient (primary500 -> a dark navy) in the design. Reproducing
   // gradient text in RN needs a native masked-view, which this project
