@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, Platform, Pressable, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
 import { CONFIRMATION_BURST_SVG_XML } from '../assets/svg/confirmationBurst';
+import ConfettiOverlay from '../components/ConfettiOverlay';
 import { resolveCrop } from '../onboarding/resolveCrop';
 import { colors, fonts, useScale } from '../theme/theme';
 
@@ -76,6 +77,10 @@ type Props = {
 // https://www.figma.com/design/BRYiy1cPYtONG0fHRjj5Ez/Vibe-Code?node-id=54-1541
 export default function ConfirmationScreen({ onGoHome }: Props) {
   const scale = useScale();
+  // Plays once on arrival (this screen is only reachable by saving a
+  // password), then unmounts itself so nothing keeps animating behind the
+  // page for the rest of its life.
+  const [showConfetti, setShowConfetti] = useState(true);
 
   const mascotCrop = resolveCrop(
     { left: '-13.28%', top: '-10.12%', width: '126.57%', height: '114.16%' },
@@ -242,6 +247,12 @@ export default function ConfirmationScreen({ onGoHome }: Props) {
           </View>
         </View>
       </SafeAreaView>
+
+      {/* Sits outside the SafeAreaView so pieces spill in from the true top
+          edge of the screen (above the safe-area inset), and last in the
+          tree so they fall in front of the page content — matching the
+          design, where the confetti overlays the headline and mascot. */}
+      {showConfetti && <ConfettiOverlay onDone={() => setShowConfetti(false)} />}
     </LinearGradient>
   );
 }
