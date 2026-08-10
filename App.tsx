@@ -21,6 +21,7 @@ import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
 import RegistrationNameScreen from './src/screens/RegistrationNameScreen';
 import RegistrationClassScreen from './src/screens/RegistrationClassScreen';
 import RegistrationBatchScreen from './src/screens/RegistrationBatchScreen';
+import RegistrationGroupScreen from './src/screens/RegistrationGroupScreen';
 import { APP_IMAGE_MODULES } from './src/onboarding/preload';
 
 SplashScreenModule.preventAutoHideAsync().catch(() => {});
@@ -31,7 +32,8 @@ type Screen =
   | 'otp'
   | 'registrationName'
   | 'registrationClass'
-  | 'registrationBatch';
+  | 'registrationBatch'
+  | 'registrationGroup';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -114,7 +116,16 @@ export default function App() {
         {screen === 'registrationBatch' && (
           <RegistrationBatchScreen
             onBack={() => setScreen('registrationClass')}
-            onSelectBatch={(batch) => console.log('Batch selected:', batch)}
+            onSelectBatch={(batch) => {
+              console.log('Batch selected:', batch);
+              setScreen('registrationGroup');
+            }}
+          />
+        )}
+        {screen === 'registrationGroup' && (
+          <RegistrationGroupScreen
+            onBack={() => setScreen('registrationBatch')}
+            onSelectGroup={(groupId) => console.log('Group selected:', groupId)}
           />
         )}
       </View>

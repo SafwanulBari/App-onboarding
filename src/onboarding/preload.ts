@@ -13,4 +13,7 @@ export const APP_IMAGE_MODULES = [
   require('../../assets/login/flag-bd.png'),
   require('../../assets/registration/mascot.png'),
   require('../../assets/registration/mascot-thumbsup.png'),
+  require('../../assets/registration/group-science.png'),
+  require('../../assets/registration/group-business.png'),
+  require('../../assets/registration/group-humanities.png'),
 ];
