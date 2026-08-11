@@ -153,7 +153,20 @@ export default function StreakCalendarSheet({ visible, onClose, monthStreakDays 
 
   const grid = buildMonthGrid(cursor.getFullYear(), cursor.getMonth());
   const isCurrentRealMonth = cursor.getFullYear() === today.getFullYear() && cursor.getMonth() === today.getMonth();
-  const cellWidth = 372 / 7;
+
+  // The week row is a flex `justify-between` of 7 44px cells inside the
+  // 372px content column (node 78:3817/78:3825 etc.) — NOT 7 equal-width
+  // cells filling the row edge-to-edge. That leaves a ~10.67px gap
+  // between cells, which the highlight pills (absolutely positioned, so
+  // they need real left/width rather than relying on flex) have to
+  // account for. Verified against the design's own partial-pill math:
+  // Figma places a 2-day pill at `left: calc(50% - 137px)` with
+  // `translateX(-50%)`, which nets out to left:0 for a 372-wide row —
+  // exactly CELL_STEP * 0, confirming this derivation is right rather
+  // than assumed.
+  const CELL_WIDTH = 44;
+  const CONTENT_WIDTH = 372;
+  const CELL_STEP = CELL_WIDTH + (CONTENT_WIDTH - CELL_WIDTH * 7) / 6;
 
   const goToPrevMonth = () => setCursor((c) => new Date(c.getFullYear(), c.getMonth() - 1, 1));
   const goToNextMonth = () => setCursor((c) => new Date(c.getFullYear(), c.getMonth() + 1, 1));
@@ -189,40 +202,38 @@ export default function StreakCalendarSheet({ visible, onClose, monthStreakDays 
             transform: [{ translateY }],
           }}
         >
-          {/* Drag zone: handle bar + the streak header row. Scoped to just
-              this area (not the whole sheet) so the month-selector and
-              calendar cells below stay tappable without fighting the pan
-              responder. */}
-          <View {...panResponder.panHandlers}>
-            <View style={{ alignItems: 'center', paddingTop: scale(10) }}>
-              <View style={{ width: scale(36), height: scale(4), borderRadius: scale(2), backgroundColor: colors.gray300 }} />
+          {/* Drag zone: just the streak header row (no handle bar graphic —
+              the design doesn't draw one; the drag-to-dismiss gesture is
+              still live over this whole row, it's just not visually
+              indicated with an extra element the design doesn't have).
+              Scoped to this row only (not the whole sheet) so the
+              month-selector and calendar cells below stay tappable
+              without fighting the pan responder. */}
+          <View
+            {...panResponder.panHandlers}
+            style={{
+              paddingTop: scale(36),
+              paddingHorizontal: scale(20),
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
+              <SvgXml xml={PROFILE_FLAME_SVG_XML} width={scale(28.67)} height={scale(34)} />
+              <Text style={{ fontFamily: fonts.medium, fontSize: scale(18), color: colors.gray700 }}>তোমার স্ট্রিক</Text>
             </View>
-
-            <View
-              style={{
-                marginTop: scale(20),
-                paddingHorizontal: scale(20),
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
-                <SvgXml xml={PROFILE_FLAME_SVG_XML} width={scale(28.67)} height={scale(34)} />
-                <Text style={{ fontFamily: fonts.medium, fontSize: scale(18), color: colors.gray700 }}>তোমার স্ট্রিক</Text>
-              </View>
-              <Text>
-                <Text style={{ fontFamily: fonts.bold, fontSize: scale(40), lineHeight: scale(40) * 1.5, color: colors.secondary500 }}>
-                  {toBengaliNumerals(monthStreakDays)}
-                </Text>
-                <Text style={{ fontFamily: fonts.medium, fontSize: scale(14), color: colors.secondary500 }}> দিন</Text>
+            <Text>
+              <Text style={{ fontFamily: fonts.bold, fontSize: scale(40), lineHeight: scale(40) * 1.5, color: colors.secondary500 }}>
+                {toBengaliNumerals(monthStreakDays)}
               </Text>
-            </View>
+              <Text style={{ fontFamily: fonts.medium, fontSize: scale(14), color: colors.secondary500 }}> দিন</Text>
+            </Text>
           </View>
 
           <View
             style={{
-              marginTop: scale(20),
+              marginTop: scale(24),
               marginHorizontal: scale(20),
               backgroundColor: colors.gray200,
               padding: scale(2),
@@ -280,13 +291,13 @@ export default function StreakCalendarSheet({ visible, onClose, monthStreakDays 
             </View>
           </View>
 
-          <ScrollView style={{ marginTop: scale(20) }} contentContainerStyle={{ paddingHorizontal: scale(20), paddingBottom: scale(20) }}>
-            <View style={{ flexDirection: 'row' }}>
+          <ScrollView style={{ marginTop: scale(28) }} contentContainerStyle={{ paddingHorizontal: scale(20), paddingBottom: scale(20) }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               {WEEK_DAYS.map((day) => (
                 <Text
                   key={day}
                   style={{
-                    width: scale(cellWidth),
+                    width: scale(CELL_WIDTH),
                     textAlign: 'center',
                     fontFamily: fonts.medium,
                     fontSize: scale(14),
@@ -302,7 +313,7 @@ export default function StreakCalendarSheet({ visible, onClose, monthStreakDays 
             {grid.map((row, rowIndex) => {
               const runs = findHighlightRuns(row);
               return (
-                <View key={rowIndex} style={{ marginTop: scale(8), height: scale(30), position: 'relative' }}>
+                <View key={rowIndex} style={{ marginTop: scale(rowIndex === 0 ? 20 : 39), height: scale(30), position: 'relative' }}>
                   {runs.map((run, runIndex) => (
                     <LinearGradient
                       key={runIndex}
@@ -311,17 +322,17 @@ export default function StreakCalendarSheet({ visible, onClose, monthStreakDays 
                       end={{ x: 0.5, y: 1 }}
                       style={{
                         position: 'absolute',
-                        left: scale(run.startCol * cellWidth),
-                        width: scale((run.endCol - run.startCol + 1) * cellWidth),
+                        left: scale(run.startCol * CELL_STEP),
+                        width: scale((run.endCol - run.startCol) * CELL_STEP + CELL_WIDTH),
                         height: scale(30),
                         borderRadius: scale(111),
                       }}
                     />
                   ))}
-                  <View style={{ flexDirection: 'row' }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     {row.map((cell, col) => {
                       if (cell.day === null) {
-                        return <View key={col} style={{ width: scale(cellWidth), height: scale(30) }} />;
+                        return <View key={col} style={{ width: scale(CELL_WIDTH), height: scale(30) }} />;
                       }
                       const isToday = isCurrentRealMonth && cell.day === today.getDate();
                       const isActive = DEMO_HIGHLIGHTED_DAYS.has(cell.day);
@@ -329,7 +340,7 @@ export default function StreakCalendarSheet({ visible, onClose, monthStreakDays 
 
                       if (isToday) {
                         return (
-                          <View key={col} style={{ width: scale(cellWidth), height: scale(30), alignItems: 'center', justifyContent: 'center' }}>
+                          <View key={col} style={{ width: scale(CELL_WIDTH), height: scale(30), alignItems: 'center', justifyContent: 'center' }}>
                             <View
                               style={{
                                 width: scale(28),
@@ -350,7 +361,7 @@ export default function StreakCalendarSheet({ visible, onClose, monthStreakDays 
                         <Text
                           key={col}
                           style={{
-                            width: scale(cellWidth),
+                            width: scale(CELL_WIDTH),
                             height: scale(30),
                             textAlign: 'center',
                             textAlignVertical: 'center',
