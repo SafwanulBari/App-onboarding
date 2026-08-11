@@ -1,15 +1,5 @@
-import React, { useRef, useState } from 'react';
-import {
-  Animated,
-  Easing,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -30,6 +20,7 @@ import RegistrationGroupOptionCard from '../components/RegistrationGroupOptionCa
 import RegistrationHeader from '../components/RegistrationHeader';
 import RegistrationMascotCard from '../components/RegistrationMascotCard';
 import StepContentTransition from '../components/StepContentTransition';
+import useAnimatedKeyboardHeight from '../hooks/useAnimatedKeyboardHeight';
 import { colors, fonts, useScale } from '../theme/theme';
 
 const scienceIcon = require('../../assets/registration/group-science.png');
@@ -157,13 +148,25 @@ function NameBody({
   onContinue: () => void;
 }) {
   const scale = useScale();
+  const keyboardHeight = useAnimatedKeyboardHeight();
+  const inputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    // Deferred focus instead of the `autoFocus` prop — see
+    // useAnimatedKeyboardHeight's header comment. Firing the keyboard open
+    // this early, before the screen's own first layout pass has settled,
+    // is exactly the race that broke this on-device; a short delay gives
+    // layout a frame to commit first.
+    const timer = setTimeout(() => inputRef.current?.focus(), 80);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    // See RegistrationNameScreen's git history for the keyboard-avoidance
-    // fix this preserves: KeyboardAvoidingView shrinks this body (not the
-    // sticky header/mascot above it) so the CTA lands above the keyboard
-    // and the input re-centers in the smaller visible area.
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    // paddingBottom driven by the real keyboard height (see
+    // useAnimatedKeyboardHeight) shrinks this body — not the sticky
+    // header/mascot above it — so the CTA lands above the keyboard and
+    // the input re-centers in the smaller visible area.
+    <Animated.View style={{ flex: 1, paddingBottom: keyboardHeight }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ flexGrow: 1 }}
@@ -190,11 +193,11 @@ function NameBody({
               </Text>
             )}
             <TextInput
+              ref={inputRef}
               value={name}
               onChangeText={setName}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
-              autoFocus
               cursorColor={colors.primary500}
               selectionColor={colors.primary500}
               style={{
@@ -240,7 +243,7 @@ function NameBody({
           </Pressable>
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </Animated.View>
   );
 }
 
