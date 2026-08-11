@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,7 +13,9 @@ import {
   PROFILE_PENCIL_SVG_XML,
 } from '../assets/svg/profileIcons';
 import HomeBottomNav from '../components/HomeBottomNav';
+import StreakCalendarSheet from '../components/StreakCalendarSheet';
 import { colors, fonts, useScale } from '../theme/theme';
+import { toBengaliNumerals } from '../utils/bengaliNumerals';
 
 const chipNotification = require('../../assets/profile/chip-notification.png');
 const chipProfileEdit = require('../../assets/profile/chip-profile-edit.png');
@@ -84,6 +86,7 @@ export default function ProfileScreen({
 }: Props) {
   const scale = useScale();
   const insets = useSafeAreaInsets();
+  const [isStreakSheetOpen, setIsStreakSheetOpen] = useState(false);
 
   const MENU_ITEMS: MenuItem[] = [
     { id: 'notification', icon: chipNotification, title: 'নোটিফিকেশন', subtitle: 'সর্বশেষ আপডেট দেখো', onPress: onOpenNotifications },
@@ -190,7 +193,9 @@ export default function ProfileScreen({
         </View>
 
         <View style={{ marginTop: scale(24), paddingHorizontal: scale(16), gap: scale(20) }}>
-          {/* Streak card (node 78:3362) */}
+          {/* Streak card (node 78:3362) — tapping it opens the streak
+              calendar bottom sheet (node 78:3569). */}
+          <Pressable onPress={() => setIsStreakSheetOpen(true)}>
           <LinearGradient
             colors={[colors.profileStreakGradientStart, colors.profileStreakGradientEnd]}
             start={{ x: 0.5, y: 0 }}
@@ -214,7 +219,7 @@ export default function ProfileScreen({
               </View>
               <Text>
                 <Text style={{ fontFamily: fonts.bold, fontSize: scale(32), lineHeight: scale(32) * 1.5, color: colors.white }}>
-                  {String(streakDays).padStart(2, '0').replace(/[0-9]/g, (d) => '০১২৩৪৫৬৭৮৯'[Number(d)])}
+                  {toBengaliNumerals(String(streakDays).padStart(2, '0'))}
                 </Text>
                 <Text style={{ fontFamily: fonts.medium, fontSize: scale(14), color: colors.white }}> দিন</Text>
               </Text>
@@ -273,6 +278,7 @@ export default function ProfileScreen({
               })}
             </View>
           </LinearGradient>
+          </Pressable>
 
           {/* Menu list card (node 78:3470) */}
           <View
@@ -339,6 +345,8 @@ export default function ProfileScreen({
       <SafeAreaView edges={['bottom']} style={{ backgroundColor: colors.white }}>
         <HomeBottomNav onSelectHome={onSelectHome ?? onBack} onSelectCourse={onSelectCourse} onSelectAi={onSelectAi} />
       </SafeAreaView>
+
+      <StreakCalendarSheet visible={isStreakSheetOpen} onClose={() => setIsStreakSheetOpen(false)} />
     </View>
   );
 }
