@@ -17,4 +17,11 @@ export const APP_IMAGE_MODULES = [
   require('../../assets/registration/group-business.png'),
   require('../../assets/registration/group-humanities.png'),
   require('../../assets/confirmation/mascot-celebrate.png'),
+  require('../../assets/home/gift-box-confetti.png'),
+  require('../../assets/home/course-thumbnail.jpg'),
+  require('../../assets/home/quiz-king.png'),
+  require('../../assets/home/icon-live-class.png'),
+  require('../../assets/home/icon-animated-video.png'),
+  require('../../assets/home/icon-live-mcq.png'),
+  require('../../assets/home/icon-notes.png'),
 ];

@@ -22,6 +22,7 @@ import LoginMobileNumberScreen from './src/screens/LoginMobileNumberScreen';
 import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
 import RegistrationFlowScreen from './src/screens/RegistrationFlowScreen';
 import ConfirmationScreen from './src/screens/ConfirmationScreen';
+import HomeScreen from './src/screens/HomeScreen';
 import { APP_IMAGE_MODULES } from './src/onboarding/preload';
 
 SplashScreenModule.preventAutoHideAsync().catch(() => {});
@@ -31,7 +32,8 @@ type Screen =
   | 'login'
   | 'otp'
   | 'registration'
-  | 'confirmation';
+  | 'confirmation'
+  | 'home';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -115,7 +117,13 @@ export default function App() {
             />
           )}
           {screen === 'confirmation' && (
-            <ConfirmationScreen onGoHome={() => console.log('Go to homepage requested')} />
+            <ConfirmationScreen onGoHome={() => setScreen('home')} />
+          )}
+          {screen === 'home' && (
+            <HomeScreen
+              onSelectCourse={() => console.log('Course tab tapped (not built yet)')}
+              onSelectAi={() => console.log('Shikho AI tab tapped (not built yet)')}
+            />
           )}
         </ScreenTransition>
       </View>

@@ -48,6 +48,18 @@ export const colors = {
   // is the gradient's visual midtone (its 50% stop) as the closest safe
   // single-color approximation, rather than the lighter flat primary500.
   classNumeralBlue: '#3341B9',
+  // "Home (Free User)" screen (node 78:3913), reached from the Confirmation
+  // page's "হোমপেজে যাও" button.
+  homeHeroGradientStart: '#1432AB',
+  homeHeroGradientEnd: '#081445',
+  homeAccent800: '#0F1F59',
+  homeBodyText: '#262626',
+  homeMutedText: '#525252',
+  homeNavInactiveIcon: '#B1BFCA',
+  homeNavInactiveText: '#676EA0',
+  homePriceGreen: '#39B54A',
+  homeQuizGradientStart: '#310142',
+  homeQuizGradientEnd: '#B03DD9',
 };
 
 // Baloo Da 2 supports Bengali glyphs and is the family used throughout the design.
