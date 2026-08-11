@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
 import { HOME_AVATAR_DEFAULT_SVG_XML } from '../assets/svg/homeAvatarDefault';
 import { HOME_LOGO_BIRD_SVG_XML } from '../assets/svg/homeLogo';
@@ -53,6 +53,19 @@ export default function HomeScreen({
   onSelectAi,
 }: Props) {
   const scale = useScale();
+  const insets = useSafeAreaInsets();
+  // Figma's hero frame (node 78:3914) is 375 design-px tall and its own
+  // coordinate origin (y=0) already includes a 52px mocked-up status bar,
+  // i.e. real content starts at y=62. Real devices have a variable safe
+  // area instead of that fixed 52px, so every offset below is measured
+  // from `insets.top` (not from y=0) and 52 is subtracted out of each
+  // original Figma y-coordinate. Using absolute positioning (rather than
+  // chaining marginTop between rows) is deliberate: an earlier version
+  // stacked marginTop after each row's own flow height, which silently
+  // double-counted that height and pushed the greeting/avatar row down
+  // far enough to collide with the sheet below it on real devices.
+  const heroContentHeight = scale(375 - 52);
+  const heroHeight = insets.top + heroContentHeight;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.white }}>
@@ -64,78 +77,92 @@ export default function HomeScreen({
           colors={[colors.homeHeroGradientStart, colors.homeHeroGradientEnd]}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
-          style={{ paddingBottom: scale(175) }}
+          style={{ height: heroHeight }}
         >
-          <SafeAreaView edges={['top']}>
-            <View
-              style={{
-                paddingHorizontal: scale(20),
-                marginTop: scale(10),
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <SvgXml xml={HOME_LOGO_BIRD_SVG_XML} width={scale(42.44)} height={scale(28)} />
-              <Pressable hitSlop={8}>
-                <SvgXml xml={HOME_SEARCH_ICON_SVG_XML} width={scale(24)} height={scale(24)} />
-              </Pressable>
-            </View>
+          <View
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: insets.top + scale(62 - 52),
+              paddingHorizontal: scale(20),
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <SvgXml xml={HOME_LOGO_BIRD_SVG_XML} width={scale(42.44)} height={scale(28)} />
+            <Pressable hitSlop={8}>
+              <SvgXml xml={HOME_SEARCH_ICON_SVG_XML} width={scale(24)} height={scale(24)} />
+            </Pressable>
+          </View>
 
-            <View
-              style={{
-                paddingHorizontal: scale(20),
-                marginTop: scale(48),
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <View style={{ gap: scale(5), flexShrink: 1 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
-                  <Text style={{ fontFamily: fonts.semiBold, fontSize: scale(20), lineHeight: scale(20) * 1.5, color: colors.white }}>
-                    {`হ্যালো, ${studentName}`}
-                  </Text>
-                  <Text style={{ fontSize: scale(20) }}>👋</Text>
-                </View>
-                <Text
-                  style={{
-                    fontFamily: fonts.semiBold,
-                    fontSize: scale(12),
-                    color: 'rgba(255,255,255,0.88)',
-                  }}
-                >
-                  {studentClass}
+          <View
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: insets.top + scale(110 - 52),
+              paddingHorizontal: scale(20),
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <View style={{ gap: scale(5), flexShrink: 1 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
+                <Text style={{ fontFamily: fonts.semiBold, fontSize: scale(20), lineHeight: scale(20) * 1.5, color: colors.white }}>
+                  {`হ্যালো, ${studentName}`}
                 </Text>
+                <Text style={{ fontSize: scale(20) }}>👋</Text>
               </View>
-              <View
+              <Text
                 style={{
-                  width: scale(60),
-                  height: scale(60),
-                  borderRadius: scale(30),
-                  borderWidth: 1,
-                  borderColor: colors.white,
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  fontFamily: fonts.semiBold,
+                  fontSize: scale(12),
+                  color: 'rgba(255,255,255,0.88)',
                 }}
               >
-                <SvgXml xml={HOME_AVATAR_DEFAULT_SVG_XML} width={scale(56)} height={scale(56)} />
-              </View>
+                {studentClass}
+              </Text>
             </View>
-          </SafeAreaView>
+            <View
+              style={{
+                width: scale(60),
+                height: scale(60),
+                borderRadius: scale(30),
+                borderWidth: 1,
+                borderColor: colors.white,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <SvgXml xml={HOME_AVATAR_DEFAULT_SVG_XML} width={scale(56)} height={scale(56)} />
+            </View>
+          </View>
         </LinearGradient>
 
-        {/* Rising white sheet — overlaps the hero's bottom (185 design-px,
-            Figma's own sheet-vs-hero overlap on node 78:3913/78:3915)
-            rather than starting a hard seam right under the avatar row. */}
-        <View
+        {/* Rising sheet — overlaps the hero's bottom by 185 design-px
+            (Figma's own sheet-vs-hero overlap on node 78:3913/78:3915)
+            rather than starting a hard seam right under the avatar row.
+            Its own background is a white -> light-blue gradient (node
+            78:4009 "Rectangle 9766"), not flat white. overflow: hidden
+            clips the gift-box illustration below, which is intentionally
+            offset above this container's own top padding — without
+            clipping, that offset let it bleed into the hero on wider
+            devices where `scale()` makes the offset proportionally
+            bigger. */}
+        <LinearGradient
+          colors={[colors.white, colors.homeSheetGradientEnd]}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
           style={{
             marginTop: -scale(185),
-            backgroundColor: colors.white,
             borderTopLeftRadius: scale(20),
             borderTopRightRadius: scale(20),
             paddingTop: scale(38),
             paddingHorizontal: scale(20),
+            overflow: 'hidden',
           }}
         >
           {/* "3 Days Everything Free" trial promo (node 78:4008) */}
@@ -145,11 +172,23 @@ export default function HomeScreen({
               style={{ position: 'absolute', top: -scale(18), right: -scale(20), width: scale(132), height: scale(176) }}
               resizeMode="contain"
             />
-            <View style={{ gap: scale(16), paddingRight: scale(90) }}>
-              <Text style={{ fontFamily: fonts.bold, fontSize: scale(24), lineHeight: scale(24) * 1.5, color: colors.homeAccent800 }}>
-                ৩ দিন সবকিছু ফ্রি!
-              </Text>
-            </View>
+            <Text
+              style={{
+                // Not width-constrained to Figma's own (tight) 180 — the
+                // gift-box illustration is absolutely positioned
+                // independent of this text's flow, and a hard-coded width
+                // risked an unnecessary line-wrap wherever "Baloo Da 2"
+                // Bold measures a hair wider than Figma did for this
+                // exact string, which a plain single-line phrase like
+                // this doesn't need to risk.
+                fontFamily: fonts.bold,
+                fontSize: scale(24),
+                lineHeight: scale(24) * 1.5,
+                color: colors.homeAccent800,
+              }}
+            >
+              ৩ দিন সবকিছু ফ্রি!
+            </Text>
             <View style={{ gap: scale(12), marginTop: scale(16) }}>
               <Text style={{ fontFamily: fonts.regular, fontSize: scale(14), lineHeight: scale(14) * 1.6, color: colors.homeMutedText }}>
                 ফ্রিতে যা যা পাবে-
@@ -178,7 +217,9 @@ export default function HomeScreen({
             </View>
           </View>
 
-          {/* Course promo sub-card (node 78:4319) */}
+          {/* Course promo sub-card (node 78:4319) — plain white, no shadow
+              in the design (it reads fine unshadowed against the sheet's
+              own gradient, which is barely tinted this high up). */}
           <View
             style={{
               marginTop: scale(24),
@@ -186,11 +227,6 @@ export default function HomeScreen({
               borderRadius: scale(12),
               padding: scale(12),
               gap: scale(20),
-              shadowColor: '#000',
-              shadowOpacity: 0.08,
-              shadowOffset: { width: 0, height: scale(2) },
-              shadowRadius: scale(8),
-              elevation: 3,
             }}
           >
             <View style={{ flexDirection: 'row', gap: scale(12) }}>
@@ -239,7 +275,7 @@ export default function HomeScreen({
                 style={({ pressed }) => ({
                   height: scale(40),
                   borderRadius: scale(6),
-                  backgroundColor: colors.accent100,
+                  backgroundColor: colors.homeButtonLightBlue,
                   alignItems: 'center',
                   justifyContent: 'center',
                   opacity: pressed ? 0.85 : 1,
@@ -271,10 +307,10 @@ export default function HomeScreen({
               resizeMode="contain"
             />
             <View style={{ gap: scale(4), width: scale(206) }}>
-              <Text style={{ fontFamily: fonts.bold, fontSize: scale(18), lineHeight: scale(18) * 1.5, color: '#FAFAFA' }}>
+              <Text style={{ fontFamily: fonts.bold, fontSize: scale(18), lineHeight: scale(18) * 1.5, color: colors.gray50 }}>
                 নিজেকে যাচাই করো
               </Text>
-              <Text style={{ fontFamily: fonts.medium, fontSize: scale(12), lineHeight: scale(12) * 1.4, color: '#EFEFEF' }}>
+              <Text style={{ fontFamily: fonts.medium, fontSize: scale(12), lineHeight: scale(12) * 1.4, color: colors.gray200 }}>
                 চ্যালেঞ্জ নাও - সাবজেক্ট, চ্যাপ্টার, টপিক সিলেক্ট করে প্রশ্ন বানাও আর টেস্ট দিয়ে নিজেকে যাচাই করে নাও!
               </Text>
             </View>
@@ -313,7 +349,7 @@ export default function HomeScreen({
               <Text style={{ fontFamily: fonts.medium, fontSize: scale(14), color: colors.white }}>প্র্যাকটিস কুইজ দাও</Text>
             </Pressable>
           </LinearGradient>
-        </View>
+        </LinearGradient>
       </ScrollView>
 
       <SafeAreaView edges={['bottom']} style={{ backgroundColor: colors.white }}>

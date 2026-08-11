@@ -60,6 +60,13 @@ export const colors = {
   homePriceGreen: '#39B54A',
   homeQuizGradientStart: '#310142',
   homeQuizGradientEnd: '#B03DD9',
+  // The "3 days free" sheet's own background (node 78:4009 "Rectangle
+  // 9766") is a white -> light-blue gradient, not flat white — distinct
+  // from accent100 (#E4EEF5), which is a different blue used elsewhere.
+  homeSheetGradientEnd: '#CBE3F4',
+  // "Primary/Primary 100" per the design's own token list on node 78:4319
+  // — also distinct from accent100.
+  homeButtonLightBlue: '#EDF6FF',
 };
 
 // Baloo Da 2 supports Bengali glyphs and is the family used throughout the design.
