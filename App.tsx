@@ -20,11 +20,7 @@ import { colors } from './src/theme/theme';
 import OnboardingCarouselScreen from './src/screens/OnboardingCarouselScreen';
 import LoginMobileNumberScreen from './src/screens/LoginMobileNumberScreen';
 import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
-import RegistrationNameScreen from './src/screens/RegistrationNameScreen';
-import RegistrationClassScreen from './src/screens/RegistrationClassScreen';
-import RegistrationBatchScreen from './src/screens/RegistrationBatchScreen';
-import RegistrationGroupScreen from './src/screens/RegistrationGroupScreen';
-import RegistrationPasswordScreen from './src/screens/RegistrationPasswordScreen';
+import RegistrationFlowScreen from './src/screens/RegistrationFlowScreen';
 import ConfirmationScreen from './src/screens/ConfirmationScreen';
 import { APP_IMAGE_MODULES } from './src/onboarding/preload';
 
@@ -34,11 +30,7 @@ type Screen =
   | 'onboarding'
   | 'login'
   | 'otp'
-  | 'registrationName'
-  | 'registrationClass'
-  | 'registrationBatch'
-  | 'registrationGroup'
-  | 'registrationPassword'
+  | 'registration'
   | 'confirmation';
 
 export default function App() {
@@ -79,7 +71,7 @@ export default function App() {
           each screen that actually has a TextInput, via a ScrollView's
           built-in tap behavior) rather than with one global wrapper here
           — see LoginMobileNumberScreen / OtpVerificationScreen /
-          RegistrationNameScreen. Two earlier attempts at a single global
+          RegistrationFlowScreen's NameBody. Two earlier attempts at a single global
           wrapper (TouchableWithoutFeedback, then Pressable) both failed
           on-device despite working in every other check, so this scopes
           the fix precisely to where it's needed instead of wrapping
@@ -110,44 +102,13 @@ export default function App() {
             <OtpVerificationScreen
               phoneNumber={phoneNumber}
               onBack={() => setScreen('login')}
-              onVerify={() => setScreen('registrationName')}
+              onVerify={() => setScreen('registration')}
               onResend={() => console.log('Resend OTP requested')}
             />
           )}
-          {screen === 'registrationName' && (
-            <RegistrationNameScreen onContinue={() => setScreen('registrationClass')} />
-          )}
-          {screen === 'registrationClass' && (
-            <RegistrationClassScreen
-              onBack={() => setScreen('registrationName')}
-              onSelectClass={(classId) => {
-                console.log('Class selected:', classId);
-                setScreen('registrationBatch');
-              }}
-            />
-          )}
-          {screen === 'registrationBatch' && (
-            <RegistrationBatchScreen
-              onBack={() => setScreen('registrationClass')}
-              onSelectBatch={(batch) => {
-                console.log('Batch selected:', batch);
-                setScreen('registrationGroup');
-              }}
-            />
-          )}
-          {screen === 'registrationGroup' && (
-            <RegistrationGroupScreen
-              onBack={() => setScreen('registrationBatch')}
-              onSelectGroup={(groupId) => {
-                console.log('Group selected:', groupId);
-                setScreen('registrationPassword');
-              }}
-            />
-          )}
-          {screen === 'registrationPassword' && (
-            <RegistrationPasswordScreen
-              onBack={() => setScreen('registrationGroup')}
-              onSave={(password) => {
+          {screen === 'registration' && (
+            <RegistrationFlowScreen
+              onComplete={(password) => {
                 console.log('Password saved, length:', password.length);
                 setScreen('confirmation');
               }}
