@@ -34,12 +34,21 @@ const BENGALI_MONTHS = [
   'ডিসেম্বর',
 ];
 
-// Days highlighted with the streak pill (Figma node 78:3783 shows this
-// exact pattern — 2-7, 9-14, 16-17 lit). There's no backend to source a
-// real streak history from, so this is illustrative demo content applied
-// to whichever month is on screen, same as the small streak card's own
+// Days highlighted with the streak pill (Figma node 78:3783). Re-checked
+// against the design closely: it's one continuous run, day 2 through day
+// 17 (16 days — exactly matching the "১৬ দিন" header count), not two
+// separate 6-day runs. The two Fridays that fall inside that run (the
+// design's day 8 and day 15) aren't gaps — they're still highlighted,
+// just rendered as the flame badge instead of a plain number (see
+// isFridayFlame below). There's no backend to source a real streak
+// history from, so this is illustrative demo content applied to
+// whichever month is on screen, same as the small streak card's own
 // static "4 of 7 days" sample on the profile page itself.
-const DEMO_HIGHLIGHTED_DAYS = new Set([2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 16, 17]);
+const DEMO_HIGHLIGHTED_START = 2;
+const DEMO_HIGHLIGHTED_END = 17;
+function isHighlightedDay(day: number): boolean {
+  return day >= DEMO_HIGHLIGHTED_START && day <= DEMO_HIGHLIGHTED_END;
+}
 
 type DayCell = { day: number | null };
 
@@ -72,7 +81,7 @@ function findHighlightRuns(row: DayCell[]): Array<{ startCol: number; endCol: nu
   const runs: Array<{ startCol: number; endCol: number }> = [];
   let runStart: number | null = null;
   row.forEach((cell, col) => {
-    const isActive = cell.day !== null && DEMO_HIGHLIGHTED_DAYS.has(cell.day);
+    const isActive = cell.day !== null && isHighlightedDay(cell.day);
     if (isActive && runStart === null) {
       runStart = col;
     } else if (!isActive && runStart !== null) {
@@ -152,7 +161,6 @@ export default function StreakCalendarSheet({ visible, onClose, monthStreakDays 
   if (!isMounted) return null;
 
   const grid = buildMonthGrid(cursor.getFullYear(), cursor.getMonth());
-  const isCurrentRealMonth = cursor.getFullYear() === today.getFullYear() && cursor.getMonth() === today.getMonth();
 
   // The week row is a flex `justify-between` of 7 44px cells inside the
   // 372px content column (node 78:3817/78:3825 etc.) — NOT 7 equal-width
@@ -334,11 +342,16 @@ export default function StreakCalendarSheet({ visible, onClose, monthStreakDays 
                       if (cell.day === null) {
                         return <View key={col} style={{ width: scale(CELL_WIDTH), height: scale(30) }} />;
                       }
-                      const isToday = isCurrentRealMonth && cell.day === today.getDate();
-                      const isActive = DEMO_HIGHLIGHTED_DAYS.has(cell.day);
+                      const isActive = isHighlightedDay(cell.day);
                       const isFridayCol = col === 6;
+                      // The design doesn't badge "today" — it badges
+                      // Friday specifically, whenever that Friday falls
+                      // inside the highlighted run (see isHighlightedDay's
+                      // comment: the design's own day 8 and day 15, both
+                      // Fridays, get this instead of a plain number).
+                      const isFridayFlame = isFridayCol && isActive;
 
-                      if (isToday) {
+                      if (isFridayFlame) {
                         return (
                           <View key={col} style={{ width: scale(CELL_WIDTH), height: scale(30), alignItems: 'center', justifyContent: 'center' }}>
                             <View
