@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
 import {
   CHECK_SMALL_SVG_XML,
@@ -148,6 +148,7 @@ function NameBody({
   onContinue: () => void;
 }) {
   const scale = useScale();
+  const insets = useSafeAreaInsets();
   const keyboardHeight = useAnimatedKeyboardHeight();
   const inputRef = useRef<TextInput>(null);
 
@@ -161,12 +162,24 @@ function NameBody({
     return () => clearTimeout(timer);
   }, []);
 
+  // `keyboardHeight` is measured from the true screen bottom, but this
+  // body already sits inside a SafeAreaView with a bottom inset (the home
+  // indicator's safe area) baked into ITS bottom edge — so padding by the
+  // raw keyboard height double-counts that inset and leaves a gap between
+  // the CTA and the keyboard instead of the two sitting flush. Subtract
+  // insets.bottom (clamped at 0) so the CTA lands exactly on the keyboard.
+  const paddingBottom = keyboardHeight.interpolate({
+    inputRange: [0, insets.bottom, 2000],
+    outputRange: [0, 0, 2000 - insets.bottom],
+    extrapolate: 'clamp',
+  });
+
   return (
     // paddingBottom driven by the real keyboard height (see
     // useAnimatedKeyboardHeight) shrinks this body — not the sticky
     // header/mascot above it — so the CTA lands above the keyboard and
     // the input re-centers in the smaller visible area.
-    <Animated.View style={{ flex: 1, paddingBottom: keyboardHeight }}>
+    <Animated.View style={{ flex: 1, paddingBottom }}>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ flexGrow: 1 }}
