@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
 import { PROFILE_FLAME_SVG_XML } from '../assets/svg/profileFlame';
+import { PROFILE_HERO_RAYS_SVG_XML } from '../assets/svg/profileHeroRays';
 import {
   PROFILE_AVATAR_DEFAULT_SVG_XML,
   PROFILE_CHEVRON_RIGHT_SVG_XML,
@@ -110,6 +111,14 @@ export default function ProfileScreen({
         end={{ x: 0.5, y: 1 }}
         style={{ position: 'absolute', left: 0, right: 0, top: 0, height: heroHeight }}
       />
+      {/* Subtle sunburst texture over the hero gradient (node 78:3360
+          "Union 2") — Figma's own export is pre-clipped to exactly this
+          412x306 window relative to the hero's top-left, so it needs no
+          further offset math. pointerEvents="none" since it's purely
+          decorative and sits over the avatar/name content below it. */}
+      <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0, width: scale(412), height: scale(306) }}>
+        <SvgXml xml={PROFILE_HERO_RAYS_SVG_XML} width={scale(412)} height={scale(306)} />
+      </View>
 
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: scale(24) }}>
         <View style={{ alignItems: 'center', paddingTop: insets.top + scale(72 - 52), paddingHorizontal: scale(20) }}>
@@ -308,7 +317,15 @@ export default function ProfileScreen({
                       </Text>
                     </View>
                   </View>
-                  <SvgXml xml={PROFILE_CHEVRON_RIGHT_SVG_XML} width={scale(24)} height={scale(24)} />
+                  {/* The chevron glyph itself (viewBox 6.585x11.175) sits
+                      inset within a 24x24 tap-target box in the design
+                      (26.72% top/bottom, 36.28% left/right) — rendering it
+                      at its natural size inside a centered 24x24 box
+                      keeps its proportions correct instead of stretching
+                      a small arrow to fill the whole box. */}
+                  <View style={{ width: scale(24), height: scale(24), alignItems: 'center', justifyContent: 'center' }}>
+                    <SvgXml xml={PROFILE_CHEVRON_RIGHT_SVG_XML} width={scale(6.585)} height={scale(11.175)} />
+                  </View>
                 </Pressable>
                 {index < MENU_ITEMS.length - 1 && (
                   <View style={{ height: 1, backgroundColor: colors.gray200, marginVertical: scale(14) }} />
