@@ -15,6 +15,8 @@ import {
   SpaceGrotesk_700Bold,
 } from '@expo-google-fonts/space-grotesk';
 import { NotoSansBengali_600SemiBold } from '@expo-google-fonts/noto-sans-bengali';
+import ScreenTransition from './src/components/ScreenTransition';
+import { colors } from './src/theme/theme';
 import OnboardingCarouselScreen from './src/screens/OnboardingCarouselScreen';
 import LoginMobileNumberScreen from './src/screens/LoginMobileNumberScreen';
 import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
@@ -84,69 +86,77 @@ export default function App() {
           the whole app (including the onboarding carousel's animation-
           heavy absolute-positioned layout, which a ScrollView wrapper
           could risk disturbing). */}
-      <View style={{ flex: 1 }} onLayout={onLayout}>
-        {screen === 'onboarding' && (
-          <OnboardingCarouselScreen onFinish={() => setScreen('login')} />
-        )}
-        {screen === 'login' && (
-          <LoginMobileNumberScreen
-            onContinue={(phone) => {
-              setPhoneNumber(phone);
-              setScreen('otp');
-            }}
-            onSkip={() => console.log('Skipped login')}
-          />
-        )}
-        {screen === 'otp' && (
-          <OtpVerificationScreen
-            phoneNumber={phoneNumber}
-            onBack={() => setScreen('login')}
-            onVerify={() => setScreen('registrationName')}
-            onResend={() => console.log('Resend OTP requested')}
-          />
-        )}
-        {screen === 'registrationName' && (
-          <RegistrationNameScreen onContinue={() => setScreen('registrationClass')} />
-        )}
-        {screen === 'registrationClass' && (
-          <RegistrationClassScreen
-            onBack={() => setScreen('registrationName')}
-            onSelectClass={(classId) => {
-              console.log('Class selected:', classId);
-              setScreen('registrationBatch');
-            }}
-          />
-        )}
-        {screen === 'registrationBatch' && (
-          <RegistrationBatchScreen
-            onBack={() => setScreen('registrationClass')}
-            onSelectBatch={(batch) => {
-              console.log('Batch selected:', batch);
-              setScreen('registrationGroup');
-            }}
-          />
-        )}
-        {screen === 'registrationGroup' && (
-          <RegistrationGroupScreen
-            onBack={() => setScreen('registrationBatch')}
-            onSelectGroup={(groupId) => {
-              console.log('Group selected:', groupId);
-              setScreen('registrationPassword');
-            }}
-          />
-        )}
-        {screen === 'registrationPassword' && (
-          <RegistrationPasswordScreen
-            onBack={() => setScreen('registrationGroup')}
-            onSave={(password) => {
-              console.log('Password saved, length:', password.length);
-              setScreen('confirmation');
-            }}
-          />
-        )}
-        {screen === 'confirmation' && (
-          <ConfirmationScreen onGoHome={() => console.log('Go to homepage requested')} />
-        )}
+      <View style={{ flex: 1, backgroundColor: colors.white }} onLayout={onLayout}>
+        {/* Every screen-to-screen move in this app goes through this one
+            spot (there's no navigation library — `screen` is just state,
+            see the type above), so wrapping the switch here gives every
+            transition in the app the same subtle fade + slide-up "arrival"
+            motion in one place, instead of adding it per-screen. See
+            ScreenTransition for why it's entrance-only. */}
+        <ScreenTransition screenKey={screen}>
+          {screen === 'onboarding' && (
+            <OnboardingCarouselScreen onFinish={() => setScreen('login')} />
+          )}
+          {screen === 'login' && (
+            <LoginMobileNumberScreen
+              onContinue={(phone) => {
+                setPhoneNumber(phone);
+                setScreen('otp');
+              }}
+              onSkip={() => console.log('Skipped login')}
+            />
+          )}
+          {screen === 'otp' && (
+            <OtpVerificationScreen
+              phoneNumber={phoneNumber}
+              onBack={() => setScreen('login')}
+              onVerify={() => setScreen('registrationName')}
+              onResend={() => console.log('Resend OTP requested')}
+            />
+          )}
+          {screen === 'registrationName' && (
+            <RegistrationNameScreen onContinue={() => setScreen('registrationClass')} />
+          )}
+          {screen === 'registrationClass' && (
+            <RegistrationClassScreen
+              onBack={() => setScreen('registrationName')}
+              onSelectClass={(classId) => {
+                console.log('Class selected:', classId);
+                setScreen('registrationBatch');
+              }}
+            />
+          )}
+          {screen === 'registrationBatch' && (
+            <RegistrationBatchScreen
+              onBack={() => setScreen('registrationClass')}
+              onSelectBatch={(batch) => {
+                console.log('Batch selected:', batch);
+                setScreen('registrationGroup');
+              }}
+            />
+          )}
+          {screen === 'registrationGroup' && (
+            <RegistrationGroupScreen
+              onBack={() => setScreen('registrationBatch')}
+              onSelectGroup={(groupId) => {
+                console.log('Group selected:', groupId);
+                setScreen('registrationPassword');
+              }}
+            />
+          )}
+          {screen === 'registrationPassword' && (
+            <RegistrationPasswordScreen
+              onBack={() => setScreen('registrationGroup')}
+              onSave={(password) => {
+                console.log('Password saved, length:', password.length);
+                setScreen('confirmation');
+              }}
+            />
+          )}
+          {screen === 'confirmation' && (
+            <ConfirmationScreen onGoHome={() => console.log('Go to homepage requested')} />
+          )}
+        </ScreenTransition>
       </View>
     </SafeAreaProvider>
   );
