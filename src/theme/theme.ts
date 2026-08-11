@@ -67,6 +67,18 @@ export const colors = {
   // "Primary/Primary 100" per the design's own token list on node 78:4319
   // — also distinct from accent100.
   homeButtonLightBlue: '#EDF6FF',
+  // "Profile Page" (node 78:3357), reached from the Home screen's
+  // top-right avatar.
+  profileHeroGradientStart: '#005EC9',
+  profileHeroGradientEnd: '#F1F3F7',
+  profileBg: '#F1F3F7',
+  profileStreakGradientStart: '#243C87',
+  profileStreakGradientEnd: '#090F21',
+  profileStreakPillStart: '#FEC984',
+  profileStreakPillEnd: '#FF5995',
+  profileMenuTitle: '#454C7E',
+  profileMenuSubtitle: '#676EA0',
+  profileGrayLight: '#F0F6F8',
 };
 
 // Baloo Da 2 supports Bengali glyphs and is the family used throughout the design.

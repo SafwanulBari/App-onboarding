@@ -30,6 +30,7 @@ const FREE_FEATURES: Feature[] = [
 type Props = {
   studentName?: string;
   studentClass?: string;
+  onOpenProfile?: () => void;
   onSelectCourse?: () => void;
   onSelectAi?: () => void;
 };
@@ -49,6 +50,7 @@ type Props = {
 export default function HomeScreen({
   studentName = 'আরিয়ান',
   studentClass = "ক্লাস ৯ - এসএসসি'২৭",
+  onOpenProfile,
   onSelectCourse,
   onSelectAi,
 }: Props) {
@@ -126,7 +128,9 @@ export default function HomeScreen({
                 {studentClass}
               </Text>
             </View>
-            <View
+            <Pressable
+              onPress={onOpenProfile}
+              hitSlop={4}
               style={{
                 width: scale(60),
                 height: scale(60),
@@ -138,7 +142,7 @@ export default function HomeScreen({
               }}
             >
               <SvgXml xml={HOME_AVATAR_DEFAULT_SVG_XML} width={scale(56)} height={scale(56)} />
-            </View>
+            </Pressable>
           </View>
         </LinearGradient>
 

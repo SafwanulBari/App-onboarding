@@ -24,4 +24,11 @@ export const APP_IMAGE_MODULES = [
   require('../../assets/home/icon-animated-video.png'),
   require('../../assets/home/icon-live-mcq.png'),
   require('../../assets/home/icon-notes.png'),
+  require('../../assets/profile/chip-notification.png'),
+  require('../../assets/profile/chip-profile-edit.png'),
+  require('../../assets/profile/chip-syllabus.png'),
+  require('../../assets/profile/chip-saved.png'),
+  require('../../assets/profile/chip-download.png'),
+  require('../../assets/profile/chip-subscriptions.png'),
+  require('../../assets/profile/chip-settings.png'),
 ];

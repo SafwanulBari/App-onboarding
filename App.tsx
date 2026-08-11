@@ -23,6 +23,7 @@ import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
 import RegistrationFlowScreen from './src/screens/RegistrationFlowScreen';
 import ConfirmationScreen from './src/screens/ConfirmationScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
 import { APP_IMAGE_MODULES } from './src/onboarding/preload';
 
 SplashScreenModule.preventAutoHideAsync().catch(() => {});
@@ -33,7 +34,8 @@ type Screen =
   | 'otp'
   | 'registration'
   | 'confirmation'
-  | 'home';
+  | 'home'
+  | 'profile';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -121,8 +123,24 @@ export default function App() {
           )}
           {screen === 'home' && (
             <HomeScreen
+              onOpenProfile={() => setScreen('profile')}
               onSelectCourse={() => console.log('Course tab tapped (not built yet)')}
               onSelectAi={() => console.log('Shikho AI tab tapped (not built yet)')}
+            />
+          )}
+          {screen === 'profile' && (
+            <ProfileScreen
+              onSelectHome={() => setScreen('home')}
+              onSelectCourse={() => console.log('Course tab tapped (not built yet)')}
+              onSelectAi={() => console.log('Shikho AI tab tapped (not built yet)')}
+              onEditAvatar={() => console.log('Edit avatar tapped (not built yet)')}
+              onOpenNotifications={() => console.log('Notifications tapped (not built yet)')}
+              onEditProfile={() => console.log('Profile edit tapped (not built yet)')}
+              onChangeSyllabus={() => console.log('Syllabus change tapped (not built yet)')}
+              onOpenSavedQuestions={() => console.log('Saved questions tapped (not built yet)')}
+              onOpenVideoDownloads={() => console.log('Video downloads tapped (not built yet)')}
+              onOpenAdmissionInfo={() => console.log('Admission info tapped (not built yet)')}
+              onOpenSettings={() => console.log('Settings tapped (not built yet)')}
             />
           )}
         </ScreenTransition>
