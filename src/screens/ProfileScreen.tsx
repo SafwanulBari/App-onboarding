@@ -13,7 +13,7 @@ import {
   PROFILE_PENCIL_SVG_XML,
 } from '../assets/svg/profileIcons';
 import HomeBottomNav from '../components/HomeBottomNav';
-import ProfileEditSheet from '../components/ProfileEditSheet';
+import ProfileEditSheet, { AVATAR_OPTIONS, ProfilePictureSelection } from '../components/ProfileEditSheet';
 import StreakCalendarSheet from '../components/StreakCalendarSheet';
 import { colors, fonts, useScale } from '../theme/theme';
 import { toBengaliNumerals } from '../utils/bengaliNumerals';
@@ -50,8 +50,7 @@ type Props = {
   activeDayIndices?: number[];
   onBack?: () => void;
   onEditAvatar?: () => void;
-  onUploadProfilePhoto?: () => void;
-  onSaveProfilePicture?: (selectedAvatarIndex: number | null) => void;
+  onSaveProfilePicture?: (selection: ProfilePictureSelection) => void;
   onOpenNotifications?: () => void;
   onEditProfile?: () => void;
   onChangeSyllabus?: () => void;
@@ -76,7 +75,6 @@ export default function ProfileScreen({
   activeDayIndices = [0, 1, 2, 3],
   onBack,
   onEditAvatar,
-  onUploadProfilePhoto,
   onSaveProfilePicture,
   onOpenNotifications,
   onEditProfile,
@@ -93,6 +91,7 @@ export default function ProfileScreen({
   const insets = useSafeAreaInsets();
   const [isStreakSheetOpen, setIsStreakSheetOpen] = useState(false);
   const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<ProfilePictureSelection | null>(null);
 
   const MENU_ITEMS: MenuItem[] = [
     { id: 'notification', icon: chipNotification, title: 'নোটিফিকেশন', subtitle: 'সর্বশেষ আপডেট দেখো', onPress: onOpenNotifications },
@@ -145,7 +144,13 @@ export default function ProfileScreen({
                 justifyContent: 'center',
               }}
             >
-              <SvgXml xml={PROFILE_AVATAR_DEFAULT_SVG_XML} width={scale(61.6)} height={scale(61.6)} />
+              {profilePicture?.type === 'photo' ? (
+                <Image source={{ uri: profilePicture.uri }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+              ) : profilePicture?.type === 'avatar' ? (
+                <Image source={AVATAR_OPTIONS[profilePicture.avatarIndex]} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+              ) : (
+                <SvgXml xml={PROFILE_AVATAR_DEFAULT_SVG_XML} width={scale(61.6)} height={scale(61.6)} />
+              )}
             </View>
             <Pressable
               onPress={() => {
@@ -360,9 +365,9 @@ export default function ProfileScreen({
       <ProfileEditSheet
         visible={isEditSheetOpen}
         onClose={() => setIsEditSheetOpen(false)}
-        onUploadPhoto={onUploadProfilePhoto}
-        onSave={(selectedAvatarIndex) => {
-          onSaveProfilePicture?.(selectedAvatarIndex);
+        onSave={(selection) => {
+          setProfilePicture(selection);
+          onSaveProfilePicture?.(selection);
           setIsEditSheetOpen(false);
         }}
       />

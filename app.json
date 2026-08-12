@@ -24,7 +24,13 @@
     "plugins": [
       "expo-font",
       "expo-splash-screen",
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "প্রোফাইল ছবি নির্বাচন করতে তোমার ফটো লাইব্রেরিতে প্রবেশাধিকার প্রয়োজন।"
+        }
+      ]
     ]
   }
 }
