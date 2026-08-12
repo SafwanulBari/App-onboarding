@@ -21,6 +21,7 @@ import OnboardingCarouselScreen from './src/screens/OnboardingCarouselScreen';
 import LoginMobileNumberScreen from './src/screens/LoginMobileNumberScreen';
 import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
 import RegistrationFlowScreen from './src/screens/RegistrationFlowScreen';
+import GuestClassSelectionScreen from './src/screens/GuestClassSelectionScreen';
 import ConfirmationScreen from './src/screens/ConfirmationScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
@@ -33,6 +34,7 @@ type Screen =
   | 'login'
   | 'otp'
   | 'registration'
+  | 'guestClass'
   | 'confirmation'
   | 'home'
   | 'profile';
@@ -99,7 +101,13 @@ export default function App() {
                 setPhoneNumber(phone);
                 setScreen('otp');
               }}
-              onSkip={() => console.log('Skipped login')}
+              onSkip={() => setScreen('guestClass')}
+            />
+          )}
+          {screen === 'guestClass' && (
+            <GuestClassSelectionScreen
+              onBack={() => setScreen('login')}
+              onSelectClass={(classId) => console.log('Guest selected class (not built past this yet):', classId)}
             />
           )}
           {screen === 'otp' && (
