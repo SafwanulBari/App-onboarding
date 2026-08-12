@@ -142,18 +142,40 @@ export default function StreakCalendarSheet({ visible, onClose, monthStreakDays 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
+  // `onClose` is a fresh arrow function from the parent on every render, but
+  // the PanResponder below is only ever created once (useRef's initializer
+  // runs once). Route through a ref instead of capturing `onClose` directly
+  // in the responder's closures, so onPanResponderRelease always calls
+  // whatever onClose the parent most recently passed in.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
   const panResponder = useRef(
     PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gesture) => gesture.dy > 6 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+      // Both the plain and *Capture variants are set to the same check.
+      // The Capture variant runs before any nested child (e.g. a Pressable)
+      // gets a chance to claim the gesture, which matters here since this
+      // drag zone sits next to interactive siblings — without it, a child
+      // can win the responder negotiation and the drag silently never
+      // starts. onPanResponderTerminationRequest: false stops anything
+      // from stealing the gesture back mid-drag once we do have it.
+      onStartShouldSetPanResponder: () => false,
+      onStartShouldSetPanResponderCapture: () => false,
+      onMoveShouldSetPanResponder: (_, gesture) => gesture.dy > 4 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+      onMoveShouldSetPanResponderCapture: (_, gesture) => gesture.dy > 4 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+      onPanResponderTerminationRequest: () => false,
       onPanResponderMove: (_, gesture) => {
         if (gesture.dy > 0) translateY.setValue(gesture.dy);
       },
       onPanResponderRelease: (_, gesture) => {
-        if (gesture.dy > 120 || gesture.vy > 0.6) {
-          onClose();
+        if (gesture.dy > 100 || gesture.vy > 0.5) {
+          onCloseRef.current();
         } else {
           Animated.spring(translateY, { toValue: 0, useNativeDriver: true, bounciness: 4 }).start();
         }
+      },
+      onPanResponderTerminate: () => {
+        Animated.spring(translateY, { toValue: 0, useNativeDriver: true, bounciness: 4 }).start();
       },
     })
   ).current;
@@ -210,33 +232,38 @@ export default function StreakCalendarSheet({ visible, onClose, monthStreakDays 
             transform: [{ translateY }],
           }}
         >
-          {/* Drag zone: just the streak header row (no handle bar graphic —
-              the design doesn't draw one; the drag-to-dismiss gesture is
-              still live over this whole row, it's just not visually
-              indicated with an extra element the design doesn't have).
-              Scoped to this row only (not the whole sheet) so the
-              month-selector and calendar cells below stay tappable
-              without fighting the pan responder. */}
-          <View
-            {...panResponder.panHandlers}
-            style={{
-              paddingTop: scale(36),
-              paddingHorizontal: scale(20),
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
-              <SvgXml xml={PROFILE_FLAME_SVG_XML} width={scale(28.67)} height={scale(34)} />
-              <Text style={{ fontFamily: fonts.medium, fontSize: scale(18), color: colors.gray700 }}>তোমার স্ট্রিক</Text>
+          {/* Drag zone: the handle bar + streak header row (node 78:3833's
+              "Line 46" is the handle bar — 88px wide, gray, centered,
+              12px from the sheet top; it WAS missing from this build).
+              Both live in the same panHandlers view, outside the
+              ScrollView below, so the month-selector and calendar cells
+              stay tappable/scrollable without fighting the pan responder,
+              and (crucially) the drag gesture doesn't have to compete
+              with a ScrollView's own native responder for it. */}
+          <View {...panResponder.panHandlers}>
+            <View style={{ alignItems: 'center', paddingTop: scale(12) }}>
+              <View style={{ width: scale(88), height: scale(4), borderRadius: scale(2), backgroundColor: colors.gray300 }} />
             </View>
-            <Text>
-              <Text style={{ fontFamily: fonts.bold, fontSize: scale(40), lineHeight: scale(40) * 1.5, color: colors.secondary500 }}>
-                {toBengaliNumerals(monthStreakDays)}
+            <View
+              style={{
+                paddingTop: scale(20),
+                paddingHorizontal: scale(20),
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: scale(8) }}>
+                <SvgXml xml={PROFILE_FLAME_SVG_XML} width={scale(28.67)} height={scale(34)} />
+                <Text style={{ fontFamily: fonts.medium, fontSize: scale(18), color: colors.gray700 }}>তোমার স্ট্রিক</Text>
+              </View>
+              <Text>
+                <Text style={{ fontFamily: fonts.bold, fontSize: scale(40), lineHeight: scale(40) * 1.5, color: colors.secondary500 }}>
+                  {toBengaliNumerals(monthStreakDays)}
+                </Text>
+                <Text style={{ fontFamily: fonts.medium, fontSize: scale(14), color: colors.secondary500 }}> দিন</Text>
               </Text>
-              <Text style={{ fontFamily: fonts.medium, fontSize: scale(14), color: colors.secondary500 }}> দিন</Text>
-            </Text>
+            </View>
           </View>
 
           <View

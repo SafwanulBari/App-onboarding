@@ -95,18 +95,40 @@ export default function ProfileEditSheet({ visible, onClose, onSave }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
+  // `onClose` is a fresh arrow function from the parent on every render, but
+  // the PanResponder below is only ever created once (useRef's initializer
+  // runs once). Route through a ref instead of capturing `onClose` directly
+  // in the responder's closures, so onPanResponderRelease always calls
+  // whatever onClose the parent most recently passed in.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
   const panResponder = useRef(
     PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gesture) => gesture.dy > 6 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+      // Both the plain and *Capture variants are set to the same check.
+      // The Capture variant runs before any nested child gets a chance to
+      // claim the gesture — needed here since the drag zone sits above a
+      // ScrollView-adjacent layout, and without it a child can win the
+      // responder negotiation and the drag silently never starts.
+      // onPanResponderTerminationRequest: false stops anything from
+      // stealing the gesture back mid-drag once we do have it.
+      onStartShouldSetPanResponder: () => false,
+      onStartShouldSetPanResponderCapture: () => false,
+      onMoveShouldSetPanResponder: (_, gesture) => gesture.dy > 4 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+      onMoveShouldSetPanResponderCapture: (_, gesture) => gesture.dy > 4 && Math.abs(gesture.dy) > Math.abs(gesture.dx),
+      onPanResponderTerminationRequest: () => false,
       onPanResponderMove: (_, gesture) => {
         if (gesture.dy > 0) translateY.setValue(gesture.dy);
       },
       onPanResponderRelease: (_, gesture) => {
-        if (gesture.dy > 120 || gesture.vy > 0.6) {
-          onClose();
+        if (gesture.dy > 100 || gesture.vy > 0.5) {
+          onCloseRef.current();
         } else {
           Animated.spring(translateY, { toValue: 0, useNativeDriver: true, bounciness: 4 }).start();
         }
+      },
+      onPanResponderTerminate: () => {
+        Animated.spring(translateY, { toValue: 0, useNativeDriver: true, bounciness: 4 }).start();
       },
     })
   ).current;
@@ -178,38 +200,47 @@ export default function ProfileEditSheet({ visible, onClose, onSave }: Props) {
             transform: [{ translateY }],
           }}
         >
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: scale(96) }}>
-            <View {...panResponder.panHandlers}>
-              <Image source={waveBackground} style={{ width: windowWidth, height: scale(160) }} resizeMode="cover" />
-              <View style={{ alignItems: 'center', position: 'absolute', left: 0, right: 0, top: scale(12) }}>
-                <View style={{ width: scale(88), height: scale(4), borderRadius: scale(2), backgroundColor: 'rgba(255,255,255,0.6)' }} />
-              </View>
-
-              <View style={{ alignItems: 'center', marginTop: -scale(96) }}>
-                <View
-                  style={{
-                    width: scale(120),
-                    height: scale(120),
-                    borderRadius: scale(60),
-                    borderWidth: scale(2),
-                    borderColor: colors.white,
-                    backgroundColor: colors.gray300,
-                    overflow: 'hidden',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {uploadedPhotoUri !== null ? (
-                    <Image source={{ uri: uploadedPhotoUri }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
-                  ) : selectedAvatar !== null ? (
-                    <Image source={AVATAR_OPTIONS[selectedAvatar]} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
-                  ) : (
-                    <SvgXml xml={PROFILE_AVATAR_DEFAULT_SVG_XML} width={scale(84)} height={scale(84)} />
-                  )}
-                </View>
-              </View>
+          {/* Drag zone: wave header + handle bar + avatar preview, kept
+              OUTSIDE the ScrollView below on purpose. A PanResponder
+              nested inside a ScrollView has to compete with the
+              ScrollView's own native scroll responder for the same
+              downward drag gesture — on native that competition usually
+              goes to the ScrollView, which is why drag-to-dismiss from
+              this zone wasn't working. Living outside it removes that
+              conflict entirely (mirrors StreakCalendarSheet's drag zone,
+              which was never inside its ScrollView). */}
+          <View {...panResponder.panHandlers}>
+            <Image source={waveBackground} style={{ width: windowWidth, height: scale(160) }} resizeMode="cover" />
+            <View style={{ alignItems: 'center', position: 'absolute', left: 0, right: 0, top: scale(12) }}>
+              <View style={{ width: scale(88), height: scale(4), borderRadius: scale(2), backgroundColor: 'rgba(255,255,255,0.6)' }} />
             </View>
 
+            <View style={{ alignItems: 'center', marginTop: -scale(96) }}>
+              <View
+                style={{
+                  width: scale(120),
+                  height: scale(120),
+                  borderRadius: scale(60),
+                  borderWidth: scale(2),
+                  borderColor: colors.white,
+                  backgroundColor: colors.gray300,
+                  overflow: 'hidden',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {uploadedPhotoUri !== null ? (
+                  <Image source={{ uri: uploadedPhotoUri }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+                ) : selectedAvatar !== null ? (
+                  <Image source={AVATAR_OPTIONS[selectedAvatar]} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+                ) : (
+                  <SvgXml xml={PROFILE_AVATAR_DEFAULT_SVG_XML} width={scale(84)} height={scale(84)} />
+                )}
+              </View>
+            </View>
+          </View>
+
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: scale(96) }}>
             <View style={{ marginTop: scale(28), paddingHorizontal: scale(20), alignItems: 'center', gap: scale(12) }}>
               <Text style={{ fontFamily: fonts.semiBold, fontSize: scale(16), color: colors.secondaryNeutral950, textAlign: 'center' }}>
                 প্রোফাইল পিকচার পরিবর্তন করো
