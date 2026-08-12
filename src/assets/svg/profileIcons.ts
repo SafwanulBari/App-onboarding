@@ -21,3 +21,11 @@ export const PROFILE_CHEVRON_RIGHT_SVG_XML = `<svg width="7" height="12" viewBox
 export const PROFILE_DAY_RING_SVG_XML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <circle cx="12" cy="12" r="11.5" stroke="white"/>
 </svg>`;
+
+// Upload icon on the profile-picture-edit sheet's dashed drop zone (node
+// 78:3098 "UploadSimple").
+export const PROFILE_UPLOAD_SVG_XML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 13.4998V2.99985" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M20.25 13.5001V19.5001H3.75001V13.5001" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.25 6.74985L12 2.99985L15.75 6.74985" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;

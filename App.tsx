@@ -133,7 +133,9 @@ export default function App() {
               onSelectHome={() => setScreen('home')}
               onSelectCourse={() => console.log('Course tab tapped (not built yet)')}
               onSelectAi={() => console.log('Shikho AI tab tapped (not built yet)')}
-              onEditAvatar={() => console.log('Edit avatar tapped (not built yet)')}
+              onEditAvatar={() => console.log('Edit avatar pencil tapped')}
+              onUploadProfilePhoto={() => console.log('Upload photo tapped (not built yet — no device file access wired up)')}
+              onSaveProfilePicture={(avatarIndex) => console.log('Profile picture saved, avatar index:', avatarIndex)}
               onOpenNotifications={() => console.log('Notifications tapped (not built yet)')}
               onEditProfile={() => console.log('Profile edit tapped (not built yet)')}
               onChangeSyllabus={() => console.log('Syllabus change tapped (not built yet)')}

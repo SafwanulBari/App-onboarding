@@ -13,6 +13,7 @@ import {
   PROFILE_PENCIL_SVG_XML,
 } from '../assets/svg/profileIcons';
 import HomeBottomNav from '../components/HomeBottomNav';
+import ProfileEditSheet from '../components/ProfileEditSheet';
 import StreakCalendarSheet from '../components/StreakCalendarSheet';
 import { colors, fonts, useScale } from '../theme/theme';
 import { toBengaliNumerals } from '../utils/bengaliNumerals';
@@ -49,6 +50,8 @@ type Props = {
   activeDayIndices?: number[];
   onBack?: () => void;
   onEditAvatar?: () => void;
+  onUploadProfilePhoto?: () => void;
+  onSaveProfilePicture?: (selectedAvatarIndex: number | null) => void;
   onOpenNotifications?: () => void;
   onEditProfile?: () => void;
   onChangeSyllabus?: () => void;
@@ -73,6 +76,8 @@ export default function ProfileScreen({
   activeDayIndices = [0, 1, 2, 3],
   onBack,
   onEditAvatar,
+  onUploadProfilePhoto,
+  onSaveProfilePicture,
   onOpenNotifications,
   onEditProfile,
   onChangeSyllabus,
@@ -87,6 +92,7 @@ export default function ProfileScreen({
   const scale = useScale();
   const insets = useSafeAreaInsets();
   const [isStreakSheetOpen, setIsStreakSheetOpen] = useState(false);
+  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
 
   const MENU_ITEMS: MenuItem[] = [
     { id: 'notification', icon: chipNotification, title: 'নোটিফিকেশন', subtitle: 'সর্বশেষ আপডেট দেখো', onPress: onOpenNotifications },
@@ -142,7 +148,10 @@ export default function ProfileScreen({
               <SvgXml xml={PROFILE_AVATAR_DEFAULT_SVG_XML} width={scale(61.6)} height={scale(61.6)} />
             </View>
             <Pressable
-              onPress={onEditAvatar}
+              onPress={() => {
+                onEditAvatar?.();
+                setIsEditSheetOpen(true);
+              }}
               hitSlop={8}
               style={{
                 position: 'absolute',
@@ -347,6 +356,16 @@ export default function ProfileScreen({
       </SafeAreaView>
 
       <StreakCalendarSheet visible={isStreakSheetOpen} onClose={() => setIsStreakSheetOpen(false)} />
+
+      <ProfileEditSheet
+        visible={isEditSheetOpen}
+        onClose={() => setIsEditSheetOpen(false)}
+        onUploadPhoto={onUploadProfilePhoto}
+        onSave={(selectedAvatarIndex) => {
+          onSaveProfilePicture?.(selectedAvatarIndex);
+          setIsEditSheetOpen(false);
+        }}
+      />
     </View>
   );
 }
