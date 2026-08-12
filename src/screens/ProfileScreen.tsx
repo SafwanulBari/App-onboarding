@@ -240,7 +240,16 @@ export default function ProfileScreen({
             </View>
 
             <View style={{ marginTop: scale(20), paddingHorizontal: scale(16), height: scale(56) }}>
-              <View style={{ flexDirection: 'row' }}>
+              {/* Design (node 78:3387) puts an 8px gap between the 7
+                  flex-1 label columns, which is what actually centers each
+                  label over its day-circle below — the circles sit at fixed
+                  9 + i*51 offsets (see below), and only the gapped column
+                  math lines up with that pitch. Without the gap, columns
+                  are a uniform 348/7 wide with no inter-column space,
+                  which drifts the label centers away from the circle
+                  centers by up to ~4px at the two ends (very visible on
+                  শনি/শক্র.). */}
+              <View style={{ flexDirection: 'row', gap: scale(8) }}>
                 {WEEK_DAYS.map((day) => (
                   <Text
                     key={day}
@@ -258,7 +267,19 @@ export default function ProfileScreen({
                 ))}
               </View>
 
-              <View style={{ position: 'absolute', left: scale(8), top: scale(31) }}>
+              {/* NOTE on the +16 below: this container's paddingHorizontal
+                  is scale(16), but RN's Yoga (unlike web CSS) positions
+                  `position: absolute` children relative to the parent's
+                  BORDER box, not its padding box — so padding is silently
+                  ignored for left/top on these. The pill and circles below
+                  are absolute, while the weekday labels above are normal
+                  flow (so they DO get the padding), which is exactly what
+                  was throwing them out of alignment: circles/pill rendered
+                  ~16px (scaled) too far left of the labels they're
+                  supposed to sit under. Folding the container's own 16px
+                  padding back into each left value fixes it — confirmed
+                  via DOM rect measurement in the browser preview. */}
+              <View style={{ position: 'absolute', left: scale(8 + 16), top: scale(31) }}>
                 <LinearGradient
                   colors={[colors.profileStreakPillStart, colors.profileStreakPillEnd]}
                   start={{ x: 0, y: 0.5 }}
@@ -267,7 +288,7 @@ export default function ProfileScreen({
                 />
               </View>
               {WEEK_DAYS.map((_, index) => {
-                const left = 9 + index * 51;
+                const left = 9 + 16 + index * 51;
                 const isActive = activeDayIndices.includes(index);
                 return (
                   <View key={index} style={{ position: 'absolute', left: scale(left), top: scale(32) }}>
