@@ -23,6 +23,7 @@ import OtpVerificationScreen from './src/screens/OtpVerificationScreen';
 import RegistrationFlowScreen from './src/screens/RegistrationFlowScreen';
 import GuestClassSelectionScreen from './src/screens/GuestClassSelectionScreen';
 import GuestBatchSelectionScreen from './src/screens/GuestBatchSelectionScreen';
+import GuestGroupSelectionScreen from './src/screens/GuestGroupSelectionScreen';
 import ConfirmationScreen from './src/screens/ConfirmationScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
@@ -37,6 +38,7 @@ type Screen =
   | 'registration'
   | 'guestClass'
   | 'guestBatch'
+  | 'guestGroup'
   | 'confirmation'
   | 'home'
   | 'profile';
@@ -118,7 +120,19 @@ export default function App() {
           {screen === 'guestBatch' && (
             <GuestBatchSelectionScreen
               onBack={() => setScreen('guestClass')}
-              onSelectBatch={(batch) => console.log('Guest selected batch (not built past this yet):', batch)}
+              onSelectBatch={(batch) => {
+                console.log('Guest selected batch:', batch);
+                setScreen('guestGroup');
+              }}
+            />
+          )}
+          {screen === 'guestGroup' && (
+            <GuestGroupSelectionScreen
+              onBack={() => setScreen('guestBatch')}
+              onSelectGroup={(groupId) => {
+                console.log('Guest selected group:', groupId);
+                setScreen('home');
+              }}
             />
           )}
           {screen === 'otp' && (
