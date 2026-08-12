@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, Platform, Pressable, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAudioPlayer } from 'expo-audio';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
 import { CONFIRMATION_BURST_SVG_XML } from '../assets/svg/confirmationBurst';
@@ -15,6 +16,10 @@ import { resolveCrop } from '../onboarding/resolveCrop';
 import { colors, fonts, useScale } from '../theme/theme';
 
 const mascotImage = require('../../assets/confirmation/mascot-celebrate.png');
+// A synthesized (not recorded/downloaded) 1-second "pop + sparkle" chime —
+// see assets/confirmation/README or the generation script referenced in the
+// commit that added it — that plays once as the confetti starts firing.
+const confettiSound = require('../../assets/confirmation/confetti-chime.wav');
 
 type Feature = {
   id: string;
@@ -81,6 +86,18 @@ export default function ConfirmationScreen({ onGoHome }: Props) {
   // password), then unmounts itself so nothing keeps animating behind the
   // page for the rest of its life.
   const [showConfetti, setShowConfetti] = useState(true);
+
+  // The chime is exactly 1 second — matches the confetti "blast" moment
+  // rather than playing through the whole ~3.2s fall (CONFETTI_TOTAL_MS),
+  // so it reads as a celebratory sting for the burst, not background noise.
+  const confettiPlayer = useAudioPlayer(confettiSound);
+  useEffect(() => {
+    if (showConfetti) {
+      confettiPlayer.seekTo(0);
+      confettiPlayer.play();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const mascotCrop = resolveCrop(
     { left: '-13.28%', top: '-10.12%', width: '126.57%', height: '114.16%' },
